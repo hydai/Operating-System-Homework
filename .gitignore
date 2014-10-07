@@ -30,3 +30,6 @@
 
 # Debugger info
 *.dSYM
+
+# tmp files
+tmp.*
