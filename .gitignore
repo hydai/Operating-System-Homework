@@ -33,3 +33,6 @@
 
 # tmp files
 tmp.*
+
+# mac
+.DS_Store
