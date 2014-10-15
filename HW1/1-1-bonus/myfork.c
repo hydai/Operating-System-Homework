@@ -8,6 +8,8 @@
 #include <sys/wait.h>
 
 int childID = 1;
+pid_t *pids;
+void dfs_fork(int lv, int argc, char *argv[]);
 void print_help();
 void genSignalMessage(int);
 void genPassMessage(int);
@@ -21,45 +23,55 @@ int main(int argc, char *argv[])
         print_help();
         exit(1);
     }
-    pid_t *pids = (pid_t *)malloc((argc+2)*sizeof(pid_t));
+    pids = (pid_t *)malloc((argc+2)*sizeof(pid_t));
+
     pids[0] = getpid();
-    for (; childID < argc; ++childID) {
-        pids[childID] = fork();
-        if (pids[childID] == 0) {
-            /* Child process. */
-            printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), childID);
-            execl(argv[childID], argv[childID], (char *)0);
-        } else if (pids[childID] < 0) {
-            /* fork failed. */
-            status = -1;
-        } else {
-            /* Parent process */
-            waitpid(pids[childID], &status, 0);
-            printf("======= SIGNAL START =======\n");
-            printf("Receiving signal from child.\n");
-            if (WIFSIGNALED(status)) {
-                genSignalMessage(WTERMSIG(status));
-            } else if (WIFSTOPPED(status)) {
-                genSignalMessage(WSTOPSIG(status));
-            } else if (WIFEXITED(status)) {
-                genPassMessage(WEXITSTATUS(status));
-            }
-            printf("======= SIGNAL   END =======\n");
-            printf("\n\n");
-        }
-    }
-    printf("\n\n======= watproc part =======\n");
-    int i, j;
-    for (i = 0; i < argc; i++) {
-        if (i == 0) printf("Root: %d\n", pids[i]);
-        else {
-            for (j = 0; j < i; j++) {
-                printf("-");
-            }
-            printf("> %d\n", pids[i]);
-        }
-    }
+    dfs_fork(1, argc, argv);
     return 0;
+}
+
+void dfs_fork(int lv, int argc, char *argv[]) {
+    pids[lv-1] = getpid();
+    int status;
+
+    if (lv >= argc) {
+        printf("\n\n======= watproc part =======\n");
+        int i, j;
+        for (i = 0; i < argc; i++) {
+            if (i == 0) printf("Root: %d\n", pids[i]);
+            else {
+                for (j = 0; j < i; j++) {
+                    printf("-");
+                }
+                printf("> %d\n", pids[i]);
+            }
+        }
+        return;
+    }
+    pids[lv] = fork();
+    if (pids[lv] == 0) {
+        dfs_fork(lv+1, argc, argv);
+        /* Child process. */
+        printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), lv);
+        execl(argv[lv], argv[lv], (char *)0);
+    } else if (pids[lv] < 0) {
+        /* fork failed. */
+        status = -1;
+    } else {
+        /* Parent process */
+        waitpid(pids[lv], &status, 0);
+        printf("======= SIGNAL START =======\n");
+        printf("Receiving signal from child.\n");
+        if (WIFSIGNALED(status)) {
+            genSignalMessage(WTERMSIG(status));
+        } else if (WIFSTOPPED(status)) {
+            genSignalMessage(WSTOPSIG(status));
+        } else if (WIFEXITED(status)) {
+            genPassMessage(WEXITSTATUS(status));
+        }
+        printf("======= SIGNAL   END =======\n");
+        printf("\n\n");
+    }
 }
 
 void print_help() {
