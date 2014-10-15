@@ -1,8 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include <unistd.h>
-#include <assert.h>
 #include <sys/types.h>
 #include <sys/signal.h>
 #include <sys/wait.h>
@@ -23,17 +21,22 @@ int main(int argc, char *argv[])
         print_help();
         exit(1);
     }
+    /* Allocate pids array for store fork result */
     pids = (pid_t *)malloc((argc+2)*sizeof(pid_t));
 
+    /* Put root pid in index 0 */
     pids[0] = getpid();
+    /* Using recursive to fork and execute input programs */
     dfs_fork(1, argc, argv);
     return 0;
 }
 
 void dfs_fork(int lv, int argc, char *argv[]) {
+    /* Save the parent pid. */
     pids[lv-1] = getpid();
     int status;
 
+    /* End points, dump the pids and terminate the recursive */
     if (lv >= argc) {
         printf("\n\n======= watproc part =======\n");
         int i, j;
@@ -50,8 +53,10 @@ void dfs_fork(int lv, int argc, char *argv[]) {
     }
     pids[lv] = fork();
     if (pids[lv] == 0) {
-        dfs_fork(lv+1, argc, argv);
         /* Child process. */
+        /* fork first */
+        dfs_fork(lv+1, argc, argv);
+        /* then execute child process */
         printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), lv);
         execl(argv[lv], argv[lv], (char *)0);
     } else if (pids[lv] < 0) {
