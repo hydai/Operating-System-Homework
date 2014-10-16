@@ -30,6 +30,7 @@ int main(int argc, char *argv[])
         status = -1;
     } else {
         /* Parent process */
+        printf("Parent pid = %d\n", getpid());
         waitpid(pid, &status, 0);
         printf("=======SIGNAL START=======\n");
         printf("Receiving signal from child.\n");
