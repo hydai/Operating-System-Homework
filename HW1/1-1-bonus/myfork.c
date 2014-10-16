@@ -23,31 +23,19 @@ int main(int argc, char *argv[])
     }
     pid_t *pids = (pid_t *)malloc((argc+2)*sizeof(pid_t));
     pids[0] = getpid();
-    for (; childID < argc; ++childID) {
-        pids[childID] = fork();
-        if (pids[childID] == 0) {
-            /* Child process. */
-            printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), childID);
-            execl(argv[childID], argv[childID], (char *)0);
-        } else if (pids[childID] < 0) {
-            /* fork failed. */
-            status = -1;
-        } else {
-            /* Parent process */
-            waitpid(pids[childID], &status, 0);
-            printf("======= SIGNAL START =======\n");
-            printf("Receiving signal from child.\n");
-            if (WIFSIGNALED(status)) {
-                genSignalMessage(WTERMSIG(status));
-            } else if (WIFSTOPPED(status)) {
-                genSignalMessage(WSTOPSIG(status));
-            } else if (WIFEXITED(status)) {
-                genPassMessage(WEXITSTATUS(status));
-            }
-            printf("======= SIGNAL   END =======\n");
-            printf("\n\n");
-        }
+    pids[childID] = fork();
+    if (pids[childID] == 0) {
+        /* Child process. */
+        printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), childID);
+        execl("./UserModeMonitor", argv[childID], argv[childID], (char *)0);
+    } else if (pids[childID] < 0) {
+        /* fork failed. */
+        status = -1;
+    } else {
+        /* Parent process */
+        waitpid(pids[1], &status, 0);
     }
+
     printf("\n\n======= watproc part =======\n");
     int i, j;
     for (i = 0; i < argc; i++) {
