@@ -1,5 +1,4 @@
-
-obj-m       += YOUR_PROGRAM_NAME.o
+obj-m       += myforkModule.o
 KVERSION := $(shell uname -r)
 
 all:
