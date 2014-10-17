@@ -49,6 +49,7 @@ void dfs_fork(int lv, int argc, char *argv[]) {
                 printf("> %d\n", pids[i]);
             }
         }
+        puts("\n\n");
         return;
     }
     pids[lv] = fork();
