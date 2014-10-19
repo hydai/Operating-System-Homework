@@ -6,27 +6,18 @@
 
 
 MODULE_LICENSE("GPL");
-
 static char *inputFile;
 module_param(inputFile, charp, S_IRUGO|S_IWUSR);
 
 struct task_struct *task;
+int my_fork(void *argv) {
 
+}
 int my_monitor(void *argv)
 {
-    //do_fork();
-    pid_t pid = sys_fork();
-	/* fork a process here by using do_fork */
-
-    if (pid == 0) {
-        printk("CHILD\n");
-    } else {
-        printk("PARENT pid = %d\n", pid);
-    }
-	/* execute program */
-
-	/* Check signal */
-	return 0;
+    task = kthread_create(my_fork, argv, "my_fork");
+    wake_up_process(task);
+    return 0;
 }
 
 static int __init kernel_object_test_init(void)
@@ -36,9 +27,7 @@ static int __init kernel_object_test_init(void)
     struct sched_param param;
 
     printk("parameter: %s\n", inputFile);
-    task = kthread_create(my_monitor, inputFile, "my_monitor");
-    wake_up_process(task);
-
+    my_monitor(inputFile);
     return 0;
 }
 
