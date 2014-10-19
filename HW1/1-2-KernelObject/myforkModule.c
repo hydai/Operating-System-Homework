@@ -16,7 +16,7 @@ int my_fork(void *argv) {
     if (pid == 0) {
         printk("I'm child\n");
     } else {
-        do_wait(pid);
+        //do_wait(pid);
         printk("I'm parent\n");
     }
     return 0;
