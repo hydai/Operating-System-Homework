@@ -31,4 +31,5 @@ Second, project bonus:
 
 Third, project 1-2, kernel object:
     The source files are in `1-2-KernelObject`.
-    1. cd 1-2-KernelObject
+    No implement for this part.
+    I give up.
