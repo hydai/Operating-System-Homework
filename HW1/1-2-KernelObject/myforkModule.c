@@ -11,7 +11,15 @@ module_param(inputFile, charp, S_IRUGO|S_IWUSR);
 
 struct task_struct *task;
 int my_fork(void *argv) {
-
+    /* do_fork(clone_flags, stack_start, stack_size, parent_tidptr, child_tidptr);*/
+    pid_t pid = do_fork(SIGCHLD, 0, 0, NULL, NULL);
+    if (pid == 0) {
+        printk("I'm child\n");
+    } else {
+        do_wait(pid);
+        printk("I'm parent\n");
+    }
+    return 0;
 }
 int my_monitor(void *argv)
 {
