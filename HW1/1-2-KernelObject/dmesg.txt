@@ -1,0 +1,32 @@
+[  512.078557] myforkModule: module verification failed: signature and/or  required key missing - tainting kernel
+[  512.079112] parameter: QAQ
+[  512.080596] I'm parent
+[  512.080625] BUG: unable to handle kernel NULL pointer dereference at           (null)
+[  512.084023] IP: [<          (null)>]           (null)
+[  512.089830] PGD 104ba7067 PUD 11f7f3067 PMD 0 
+[  512.089830] Oops: 0010 [#1] SMP 
+[  512.089830] Modules linked in: myforkModule(OF) binfmt_misc dm_crypt joydev serio_raw i2c_piix4 mac_hid hid_generic usbhid hid crct10dif_pclmul crc32_pclmul ghash_clmulni_intel cirrus aesni_intel syscopyarea sysfillrect sysimgblt ttm drm_kms_helper aes_x86_64 lrw gf128mul glue_helper ablk_helper cryptd drm floppy psmouse
+[  512.089830] CPU: 0 PID: 2134 Comm: my_fork Tainted: GF          O 3.13.11.4 #1
+[  512.089830] Hardware name: OpenStack Foundation OpenStack Nova, BIOS Bochs 01/01/2007
+[  512.089830] task: ffff88002a8f97f0 ti: ffff8800c8d64000 task.ti: ffff8800c8d64000
+[  512.089830] RIP: 0010:[<0000000000000000>]  [<          (null)>]           (null)
+[  512.089830] RSP: 0018:ffff8800c8d65f50  EFLAGS: 00010282
+[  512.089830] RAX: 0000000000000000 RBX: 0000000000000000 RCX: ffff8800c8d64000
+[  512.089830] RDX: 0000000003680368 RSI: 0000000000000286 RDI: 0000000000000000
+[  512.089830] RBP: 0000000000000000 R08: 0000000000000286 R09: 0000000000000000
+[  512.089830] R10: 0000000000000000 R11: 0000000000000000 R12: 0000000000000000
+[  512.089830] R13: 0000000000000000 R14: 0000000000000000 R15: 0000000000000000
+[  512.089830] FS:  0000000000000000(0000) GS:ffff88011fc00000(0000) knlGS:0000000000000000
+[  512.089830] CS:  0010 DS: 0000 ES: 0000 CR0: 000000008005003b
+[  512.089830] CR2: 0000000000000000 CR3: 00000001011d3000 CR4: 00000000000006f0
+[  512.089830] Stack:
+[  512.089830]  ffffffff8172d37c 0000000000000000 0000000000000000 0000000000000000
+[  512.089830]  0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[  512.089830]  0000000000000000 0000000000000000 0000000000000000 0000000000000000
+[  512.089830] Call Trace:
+[  512.089830]  [<ffffffff8172d37c>] ? ret_from_fork+0x7c/0xb0
+[  512.089830] Code:  Bad RIP value.
+[  512.089830] RIP  [<          (null)>]           (null)
+[  512.089830]  RSP <ffff8800c8d65f50>
+[  512.089830] CR2: 0000000000000000
+[  512.089830] ---[ end trace 199eb2c59cf085dd ]---
