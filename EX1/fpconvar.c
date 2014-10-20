@@ -19,11 +19,9 @@ void *count(void *tid) {
         /* V-------Citical Section------- */
         pthread_mutex_lock (&mutexOfP);
         printf("watch_count(): thread 1 p= %d. Going into wait...\n", currentNumber);
-        //currentNumber += 1;
         pthread_mutex_unlock (&mutexOfP);
         /* ^-------Citical Section------- */
         int isFinished = 0;
-        usleep(SLEEP_PERIOD);
         /* V-------Citical Section------- */
         pthread_mutex_lock (&mutexOfP);
         pthread_cond_wait(&countReachLimit, &mutexOfP);
