@@ -60,6 +60,7 @@ void dfs_fork(int lv, int argc, char *argv[]) {
         /* then execute child process */
         printf("###### Process %d - PARENT %d - CHILDID %d ######\n", getpid(), getppid(), lv);
         execl(argv[lv], argv[lv], (char *)0);
+        exit(0);
     } else if (pids[lv] < 0) {
         /* fork failed. */
         status = -1;
