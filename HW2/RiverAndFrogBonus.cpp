@@ -52,27 +52,31 @@ int main(int argc, char *argv[])
 
     // Level label
     QLabel *levelLabel = new QLabel("Level: ", parent);
-    levelLabel->setFont(QFont("Menlo", 18, QFont::Bold));
-    levelLabel->setGeometry(200, 0, 100, 50);
+    levelLabel->setFont(QFont("Menlo", 24, QFont::Bold));
+    levelLabel->setGeometry(5, 530, 80, 50);
 
     // Level LCDNumber
     QLCDNumber *levelLCDNumber = new QLCDNumber(parent);
+    levelLCDNumber->setSegmentStyle(QLCDNumber::Filled);
     levelLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
-    levelLCDNumber->setGeometry(300, 0, 50, 30);
+    levelLCDNumber->setGeometry(90, 530, 100, 40);
+    levelLCDNumber->display(1);
 
+#ifdef SHOW_TIME
     // time label
     QLabel *timeLabel = new QLabel("Time: ", parent);
     timeLabel->setFont(QFont("Menlo", 18, QFont::Bold));
-    timeLabel->setGeometry(350, 0, 100, 50);
+    timeLabel->setGeometry(200, 550, 80, 50);
 
     // Time LCDNumber
     QLCDNumber *timeLCDNumber = new QLCDNumber(parent);
     timeLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
-    timeLCDNumber->setGeometry(450, 0, 50, 30);
-    timeLCDNumber->display(100);
+    timeLCDNumber->setGeometry(280, 550, 100, 40);
+    timeLCDNumber->display(0);
 
     pthread_t countThread;
     pthread_create(&countThread, 0, countUP, (void *)timeLCDNumber);
+#endif
 
     // Get user input
     QLabel *inputLabel = new QLabel("Keyboard Input", parent);
@@ -82,9 +86,9 @@ int main(int argc, char *argv[])
 
     // Level slider bar
     QSlider *levelSlider = new QSlider(Qt::Horizontal, parent);
-    levelSlider->setRange(0, 99);
-    levelSlider->setValue(0);
-    levelSlider->setGeometry(70, 150, 100, 30);
+    levelSlider->setRange(1, 10);
+    levelSlider->setValue(1);
+    levelSlider->setGeometry(5, 570, 180, 30);
     QObject::connect(levelSlider, SIGNAL(valueChanged(int)), levelLCDNumber, SLOT(display(int)));
 
     // Display application
