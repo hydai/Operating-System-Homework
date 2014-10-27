@@ -4,12 +4,23 @@
 #include <QWidget>
 #include <QSlider>
 #include <QLCDNumber>
+#include <QLabel>
+#include <QKeyEvent>
 #include <pthread.h>
 #include <unistd.h>
-void *countUP (void *tid) {
-    QLCDNumber *oao = (QLCDNumber *)tid;
-    for (int i = 0; i < 60; i++) {
-        oao->display(i);
+#include <stdio.h>
+#include <termios.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include "MyWidget.h"
+struct ThreadArgs {
+    void *(args[10]);
+};
+
+void *countUP (void *tin) {
+    QLCDNumber *time = (QLCDNumber *)tin;
+    for (int i = 0; ; i++) {
+        time->display(i);
         sleep(1);
     }
     pthread_exit(NULL);
@@ -21,7 +32,8 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Application field
-    QWidget *parent = new QWidget;
+    //QWidget *parent = new QWidget;
+    MyWidget *parent = new MyWidget();
     parent->setWindowTitle("River & Frog");
     parent->setMinimumSize(800, 600);
     parent->setMaximumSize(800, 600);
@@ -38,17 +50,35 @@ int main(int argc, char *argv[])
     closeButton->setGeometry(100, 0, 100, 50);
     QObject::connect(closeButton, SIGNAL(clicked()), &app, SLOT(quit()));
 
+    // Level label
+    QLabel *levelLabel = new QLabel("Level: ", parent);
+    levelLabel->setFont(QFont("Menlo", 18, QFont::Bold));
+    levelLabel->setGeometry(200, 0, 100, 50);
+
     // Level LCDNumber
     QLCDNumber *levelLCDNumber = new QLCDNumber(parent);
-    levelLCDNumber->setGeometry(70, 60, 100, 30);
+    levelLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
+    levelLCDNumber->setGeometry(300, 0, 50, 30);
 
-    // time LCDNumber
+    // time label
+    QLabel *timeLabel = new QLabel("Time: ", parent);
+    timeLabel->setFont(QFont("Menlo", 18, QFont::Bold));
+    timeLabel->setGeometry(350, 0, 100, 50);
+
+    // Time LCDNumber
     QLCDNumber *timeLCDNumber = new QLCDNumber(parent);
-    timeLCDNumber->setGeometry(70, 110, 100, 30);
+    timeLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
+    timeLCDNumber->setGeometry(450, 0, 50, 30);
     timeLCDNumber->display(100);
 
     pthread_t countThread;
     pthread_create(&countThread, 0, countUP, (void *)timeLCDNumber);
+
+    // Get user input
+    QLabel *inputLabel = new QLabel("Keyboard Input", parent);
+    inputLabel->setFont(QFont("Menlo", 18, QFont::Bold));
+    inputLabel->setGeometry(600, 0, 200, 50);
+    parent->setInputLabel(inputLabel);
 
     // Level slider bar
     QSlider *levelSlider = new QSlider(Qt::Horizontal, parent);
@@ -62,6 +92,5 @@ int main(int argc, char *argv[])
 
     // Run application
     app.exec();
-
     return 0;
 }
