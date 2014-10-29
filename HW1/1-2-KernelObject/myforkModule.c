@@ -10,8 +10,21 @@ static char *inputFile;
 module_param(inputFile, charp, S_IRUGO|S_IWUSR);
 
 struct task_struct *task;
+static int executeProgram(void *inputFile) {
+    char *argv[] = {
+        inputFile,
+        NULL };
+    static char *envp[] = {
+        "HOME=/",
+        "TERM=linux",
+        "PATH=/sbin:/bin:/usr/sbin:/usr/bin",
+        NULL };
+    printk("%s\n", argv[0]);
+    return call_usermodehelper( argv[0], argv, envp, UMH_WAIT_PROC );
+}
 int my_fork(void *argv) {
     /* do_fork(clone_flags, stack_start, stack_size, parent_tidptr, child_tidptr);*/
+    /*
     pid_t pid = do_fork(SIGCHLD, 0, 0, NULL, NULL);
     if (pid == 0) {
         printk("I'm child\n");
@@ -19,7 +32,8 @@ int my_fork(void *argv) {
         //do_wait(pid);
         printk("I'm parent\n");
     }
-    return 0;
+    */
+    return executeProgram(argv);
 }
 int my_monitor(void *argv)
 {
