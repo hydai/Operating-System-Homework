@@ -19,7 +19,7 @@ const int           FONT_SIZE_DEFAULT       = 18;
 const int           FONT_SIZE_LABEL         = 24;
 
 // IMAGE RESOURCE PATH
-const char          BACKBROUNG_PATH[]       = ":/res/bg.png";
+const char          BACKGROUND_PATH[]       = ":/res/bg.png";
 
 // Const string
 const char          KEYBOARDINPUT[]         = "Keyboard Input";

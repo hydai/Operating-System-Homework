@@ -14,6 +14,7 @@ private:
     void initCharacterIcon();
     void initLevel();
     void initLayout();
+    void setupLayout();
     void keyPressEvent(QKeyEvent *event);
     void initSize();
     QGridLayout *layout;

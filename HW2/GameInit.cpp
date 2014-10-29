@@ -1,6 +1,8 @@
 #include "GameWidget.h"
 #include "Const.h"
 
+void GameWidget::setupLayout() {
+}
 void GameWidget::initLayout() {
     layout = new QGridLayout;
     layout->addWidget(levelLabel,           0, 0);
@@ -30,7 +32,7 @@ void GameWidget::initLevel() {
 void GameWidget::initBackground() {
     // Image label
     this->backgroundImage = new QLabel("", this);
-    backgroundImage->setPixmap(QPixmap(BACKBROUNG_PATH));
+    backgroundImage->setPixmap(QPixmap(BACKGROUND_PATH));
 }
 void GameWidget::initKeyboardInputLabel() {
     // User keyboard input
@@ -39,8 +41,10 @@ void GameWidget::initKeyboardInputLabel() {
 }
 void GameWidget::initCharacterIcon() {
     // Character icon
+    /*
     this->characterIcon = new QLabel("", this);
-    characterIcon->setPixmap(QPixmap(BACKBROUNG_PATH));
+    characterIcon->setPixmap(QPixmap(BACKGROUND_PATH));
+    */
 }
 void GameWidget::initSize() {
     levelLabel->resize(80, 50);
