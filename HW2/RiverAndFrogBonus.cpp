@@ -1,30 +1,24 @@
 #include <QApplication>
-#include <QPushButton>
-#include <QFont>
-#include <QWidget>
-#include <QSlider>
-#include <QLCDNumber>
-#include <QLabel>
-#include <QKeyEvent>
+#include <QtGui>
 #include <pthread.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <termios.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include "MyWidget.h"
-struct ThreadArgs {
-    void *(args[10]);
-};
+#include "Const.h"
+#include "GameWidget.h"
 
+#define SHOW_TIME
+#define BUTTON_LINE
+
+
+#ifdef SHOW_TIME
 void *countUP (void *tin) {
     QLCDNumber *time = (QLCDNumber *)tin;
     for (int i = 0; ; i++) {
+        time->setGeometry(200, 550 - 10*i, 80, 50);
         time->display(i);
-        sleep(1);
+        usleep(100000);
     }
     pthread_exit(NULL);
 }
+#endif
 
 int main(int argc, char *argv[])
 {
@@ -32,45 +26,48 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
 
     // Application field
-    //QWidget *parent = new QWidget;
-    MyWidget *parent = new MyWidget();
-    parent->setWindowTitle("River & Frog");
-    parent->setMinimumSize(800, 600);
-    parent->setMaximumSize(800, 600);
+    GameWidget *parent = new GameWidget();
+    parent->setWindowTitle(WINDOWS_TITLE);
+    parent->setMaximumSize(WINDOWS_WIDTH_MAX, WINDOWS_LENGTH_MAX);
+    parent->setMinimumSize(WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN);
 
+    // image label
+    QLabel *imageLabel = new QLabel("", parent);
+    imageLabel->setGeometry(0, 0, WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN);
+    imageLabel->setPixmap(QPixmap(BACKBROUNG_PATH));
+
+#ifdef BUTTON_LINE
     // Start button
     QPushButton *startButton = new QPushButton("Start", parent);
-    startButton->setFont(QFont("Menlo", 18, QFont::Bold));
+    startButton->setFont(QFont(FONT_TYPE, FONT_SIZE_DEFAULT, QFont::Bold));
     startButton->setGeometry(0, 0, 100, 50);
     QObject::connect(startButton, SIGNAL(clicked()), &app, SLOT(quit()));
 
     // Close button
     QPushButton *closeButton = new QPushButton("Close", parent);
-    closeButton->setFont(QFont("Menlo", 18, QFont::Bold));
+    closeButton->setFont(QFont(FONT_TYPE, FONT_SIZE_DEFAULT, QFont::Bold));
     closeButton->setGeometry(100, 0, 100, 50);
     QObject::connect(closeButton, SIGNAL(clicked()), &app, SLOT(quit()));
-
+#endif
     // Level label
     QLabel *levelLabel = new QLabel("Level: ", parent);
-    levelLabel->setFont(QFont("Menlo", 24, QFont::Bold));
+    levelLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
     levelLabel->setGeometry(5, 530, 80, 50);
 
     // Level LCDNumber
     QLCDNumber *levelLCDNumber = new QLCDNumber(parent);
     levelLCDNumber->setSegmentStyle(QLCDNumber::Filled);
-    levelLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
     levelLCDNumber->setGeometry(90, 530, 100, 40);
     levelLCDNumber->display(1);
 
 #ifdef SHOW_TIME
     // time label
     QLabel *timeLabel = new QLabel("Time: ", parent);
-    timeLabel->setFont(QFont("Menlo", 18, QFont::Bold));
+    timeLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
     timeLabel->setGeometry(200, 550, 80, 50);
 
     // Time LCDNumber
     QLCDNumber *timeLCDNumber = new QLCDNumber(parent);
-    timeLCDNumber->setFont(QFont("Menlo", 18, QFont::Bold));
     timeLCDNumber->setGeometry(280, 550, 100, 40);
     timeLCDNumber->display(0);
 
@@ -79,8 +76,8 @@ int main(int argc, char *argv[])
 #endif
 
     // Get user input
-    QLabel *inputLabel = new QLabel("Keyboard Input", parent);
-    inputLabel->setFont(QFont("Menlo", 18, QFont::Bold));
+    QLabel *inputLabel = new QLabel(KEYBOARDINPUT, parent);
+    inputLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_DEFAULT, QFont::Bold));
     inputLabel->setGeometry(600, 0, 200, 50);
     parent->setInputLabel(inputLabel);
 
