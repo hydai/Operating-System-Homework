@@ -32,7 +32,9 @@ void GameWidget::initLevel() {
 void GameWidget::initBackground() {
     // Image label
     this->backgroundImage = new QLabel("", this);
+    /*
     backgroundImage->setPixmap(QPixmap(BACKGROUND_PATH));
+    */
 }
 void GameWidget::initKeyboardInputLabel() {
     // User keyboard input
