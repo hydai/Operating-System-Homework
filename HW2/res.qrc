@@ -1,6 +1,10 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>res/upbg.png</file>
-    <file>res/upbg.jpg</file>
+    <file>res/bg.png</file>
+    <file>res/char-fly.png</file>
+    <file>res/char-hard.jpg</file>
+    <file>res/char-mid.jpg</file>
+    <file>res/char-small.jpg</file>
+    <file>res/gg.jpg</file>
 </qresource>
 </RCC>

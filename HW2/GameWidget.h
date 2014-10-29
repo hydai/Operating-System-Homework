@@ -6,12 +6,23 @@ class GameWidget : public QWidget
 {
     Q_OBJECT
 public:
-    void setInputLabel(QLabel *label);
-    void setPusheenLabel(QLabel *label);
-    void keyPressEvent(QKeyEvent *event);
+    void init();
+    ~GameWidget();
 private:
-    QLabel *inputLabel;
-    QLabel *pusheenLabel;
+    void initBackground();
+    void initKeyboardInputLabel();
+    void initCharacterIcon();
+    void initLevel();
+    void initLayout();
+    void keyPressEvent(QKeyEvent *event);
+    void initSize();
+    QGridLayout *layout;
+    QLabel *backgroundImage;
+    QLabel *keyboardInputLabel;
+    QLabel *characterIcon;
+    QLabel *levelLabel;
+    QLCDNumber *levelLCDNumber;
+    QSlider *levelSlider;
 };
 #endif
 
