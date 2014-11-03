@@ -33,18 +33,23 @@ void GameWidget::init() {
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
-    QString qstring = event->text();
-    qstring = qstring.toLower();
-    if (qstring.left(1) == "w") {
-        keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": " + qstring);
-    } else if (qstring.left(1) == "a") {
-        keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": " + qstring);
-    } else if (qstring.left(1) == "s") {
-        keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": " + qstring);
-    } else if (qstring.left(1) == "d") {
-        keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": " + qstring);
-    } else if (qstring.left(1) == "q") {
-        keyboardInputLabel->setText(tr("PUSHEEN") + qstring);
-        close();
+    switch (event->key()) {
+        case Qt::Key_D:
+            keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": D");
+            break;
+        case Qt::Key_S:
+            keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": S");
+            break;
+        case Qt::Key_A:
+            keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": A");
+            break;
+        case Qt::Key_W:
+            keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": W");
+            break;
+        case Qt::Key_Q:
+            close();
+            break;
+        default:
+            break;
     }
 }

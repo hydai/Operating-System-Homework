@@ -1,10 +1,28 @@
 #include "GameWidget.h"
 #include "Const.h"
 
-void GameWidget::setupLayout() {
-}
 void GameWidget::initLayout() {
     layout = new QGridLayout;
+    split1 = new QSplitter;
+    split2 = new QSplitter;
+    /*
+    QVBoxLayout *layout = new QVBoxLayout;
+
+    QWidget *container = new QWidget;
+    QVBoxLayout *container_layout = new QVBoxLayout;
+
+    split1->addWidget(editor1);
+    split1->addWidget(editor2);
+
+    container_layout->addWidget(split1);
+    container->setLayout(container_layout);
+
+    split2->setOrientation(Qt::Vertical);
+    split2->addWidget(container);
+    split2->addWidget(editor3);
+
+    layout->addWidget(split2);
+    */
     layout->addWidget(levelLabel,           0, 0);
     layout->addWidget(levelLCDNumber,       0, 1);
     layout->addWidget(levelSlider,          0, 2);

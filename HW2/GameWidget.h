@@ -14,9 +14,10 @@ private:
     void initCharacterIcon();
     void initLevel();
     void initLayout();
-    void setupLayout();
     void keyPressEvent(QKeyEvent *event);
     void initSize();
+    QSplitter *split1;
+    QSplitter *split2;
     QGridLayout *layout;
     QLabel *backgroundImage;
     QLabel *keyboardInputLabel;
