@@ -12,6 +12,7 @@ private:
     // ==================================
     // Initialize method
     void initBackground();
+    void initGameView();
     void initKeyboardInputLabel();
     void initCharacterIcon();
     void initLevel();

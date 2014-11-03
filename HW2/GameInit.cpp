@@ -17,6 +17,7 @@ void GameWidget::initLayout() {
     split2->setOrientation(Qt::Vertical);
     split2->addWidget(container);
     split2->addWidget(backgroundImage);
+    //split2->addWidget(gameView);
     layout->addWidget(split2);
     this->setLayout(layout);
 }
@@ -49,11 +50,17 @@ void GameWidget::initKeyboardInputLabel() {
     keyboardInputLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
     keyboardInputLabel->setObjectName("keyboardInputLabel");
 }
+void GameWidget::initGameView() {
+    this->scene = new QGraphicsScene;
+    this->gameView = new QGraphicsView(scene);
+    scene->addRect(QRectF(0, 0, 100, 100));
+}
 void GameWidget::initCharacterIcon() {
     // Character icon
     /*
     this->characterIcon = new QLabel("", this);
     characterIcon->setPixmap(QPixmap(BACKGROUND_PATH));
+    characterIcon->setGeometry(100, 100, 50, 50);
     */
 }
 void GameWidget::initSize() {
