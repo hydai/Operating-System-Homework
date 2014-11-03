@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 #include <QApplication>
 #include <QtGui>
+#include "GameItem.h"
 class GameWidget : public QWidget
 {
     Q_OBJECT
@@ -13,7 +14,6 @@ private:
     // Initialize method
     void initGameView();
     void initKeyboardInputLabel();
-    void initCharacterIcon();
     void initLevel();
     void initLayout();
     void initSize();
@@ -30,12 +30,12 @@ private:
     // ==================================
     // Gui component
     QLabel          *keyboardInputLabel;
-    QLabel          *characterIcon;
     QLabel          *levelLabel;
     QLCDNumber      *levelLCDNumber;
     QSlider         *levelSlider;
     QGraphicsScene  *scene;
     QGraphicsView   *gameView;
+    GameItem        *heroItem;
 };
 #endif
 
