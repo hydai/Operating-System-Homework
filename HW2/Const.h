@@ -15,8 +15,8 @@ const int           WINDOWS_WIDTH_MAX       = 1920;
 const int           WINDOWS_LENGTH_MAX      = 1080;
 // Font setting
 const char          FONT_TYPE[]             = "Menlo";
-const int           FONT_SIZE_DEFAULT       = 18;
-const int           FONT_SIZE_LABEL         = 24;
+const int           FONT_SIZE_DEFAULT       = 24;
+const int           FONT_SIZE_LABEL         = 36;
 
 // IMAGE RESOURCE PATH
 const char          BACKGROUND_PATH[]       = ":/res/bg.png";

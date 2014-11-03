@@ -18,7 +18,9 @@ private:
     void initSize();
     QSplitter *split1;
     QSplitter *split2;
-    QGridLayout *layout;
+    QVBoxLayout *layout;
+    QWidget *container;
+    QVBoxLayout *containerLayout;
     QLabel *backgroundImage;
     QLabel *keyboardInputLabel;
     QLabel *characterIcon;

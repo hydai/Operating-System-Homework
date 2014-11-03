@@ -8,6 +8,10 @@ GameWidget::~GameWidget() {
     delete levelLCDNumber;
     delete levelSlider;
     delete layout;
+    delete split1;
+    delete split2;
+    delete container;
+    delete containerLayout;
 }
 void GameWidget::init() {
     // Set up background image
