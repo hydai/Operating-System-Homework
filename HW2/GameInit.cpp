@@ -16,8 +16,7 @@ void GameWidget::initLayout() {
     container->setLayout(containerLayout);
     split2->setOrientation(Qt::Vertical);
     split2->addWidget(container);
-    split2->addWidget(backgroundImage);
-    //split2->addWidget(gameView);
+    split2->addWidget(gameView);
     layout->addWidget(split2);
     this->setLayout(layout);
 }
@@ -40,10 +39,6 @@ void GameWidget::initLevel() {
     levelSlider->setObjectName("levelSlider");
     QObject::connect(levelSlider, SIGNAL(valueChanged(int)), levelLCDNumber, SLOT(display(int)));
 }
-void GameWidget::initBackground() {
-    // Image label
-    this->backgroundImage = new QLabel("", this);
-}
 void GameWidget::initKeyboardInputLabel() {
     // User keyboard input
     this->keyboardInputLabel = new QLabel(KEYBOARDINPUT, this);
@@ -51,23 +46,14 @@ void GameWidget::initKeyboardInputLabel() {
     keyboardInputLabel->setObjectName("keyboardInputLabel");
 }
 void GameWidget::initGameView() {
-    this->scene = new QGraphicsScene;
-    this->gameView = new QGraphicsView(scene);
-    scene->addRect(QRectF(0, 0, 100, 100));
-}
-void GameWidget::initCharacterIcon() {
-    // Character icon
-    /*
-    this->characterIcon = new QLabel("", this);
-    characterIcon->setPixmap(QPixmap(BACKGROUND_PATH));
-    characterIcon->setGeometry(100, 100, 50, 50);
-    */
+    this->gameView = new QGraphicsView(this);
+    this->scene = new QGraphicsScene(0, 0, WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN/2);
+    gameView->setScene(scene);
 }
 void GameWidget::initSize() {
     levelLabel->resize(60, 50);
     levelLCDNumber->resize(100, 40);
     levelSlider->resize(50, 50);
-    backgroundImage->resize(WINDOWS_WIDTH_MIN/2, WINDOWS_LENGTH_MIN/2);
     keyboardInputLabel->resize(200, 50);
     this->resize(WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN);
 }

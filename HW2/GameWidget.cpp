@@ -1,7 +1,6 @@
 #include "GameWidget.h"
 #include "Const.h"
 GameWidget::~GameWidget() {
-    delete backgroundImage;
     delete keyboardInputLabel;
     delete characterIcon;
     delete levelLabel;
@@ -16,14 +15,14 @@ GameWidget::~GameWidget() {
     delete gameView;
 }
 void GameWidget::init() {
-    // Set up background image
-    this->initBackground();
     // Set up keyboard input label
     this->initKeyboardInputLabel();
     // Set up character icon
     this->initCharacterIcon();
     // Set up level infos
     this->initLevel();
+    // Set up game view
+    this->initGameView();
     
     // Set windows infomation
     this->initLayout();

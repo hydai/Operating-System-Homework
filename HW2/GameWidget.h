@@ -11,7 +11,6 @@ public:
 private:
     // ==================================
     // Initialize method
-    void initBackground();
     void initGameView();
     void initKeyboardInputLabel();
     void initCharacterIcon();
@@ -30,7 +29,6 @@ private:
     QVBoxLayout     *containerLayout;
     // ==================================
     // Gui component
-    QLabel          *backgroundImage;
     QLabel          *keyboardInputLabel;
     QLabel          *characterIcon;
     QLabel          *levelLabel;
