@@ -7,6 +7,22 @@ struct ThreadArgs {
 };
 
 // QT GUI const setting
+// QSS setting
+const char          STYLE[] = "                                         \
+                        QWidget#mainWindow                              \
+                        {                                               \
+                            background-color: rgba(200,200,200,125);    \
+                        }                                               \
+                        QLabel, QLCDNumber, QSlider                     \
+                        {                                               \
+                            background-color: rgba(100,100,100,155);    \
+                            border-radius: 25;                          \
+                        }                                               \
+                        QLabel#levelLabel, #keyboardInputLabel          \
+                        {                                               \
+                            margin: 0 0 0 10;                           \
+                        }                                               \
+                        ";
 // Windows setting
 const char          WINDOWS_TITLE[]         = "River & Frog";
 const int           WINDOWS_WIDTH_MIN       = 1440;

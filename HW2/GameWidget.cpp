@@ -12,6 +12,8 @@ GameWidget::~GameWidget() {
     delete split2;
     delete container;
     delete containerLayout;
+    delete scene;
+    delete gameView;
 }
 void GameWidget::init() {
     // Set up background image
@@ -29,10 +31,7 @@ void GameWidget::init() {
     this->setMinimumSize(WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN);
     this->setMaximumSize(WINDOWS_WIDTH_MAX, WINDOWS_LENGTH_MAX);
     this->setObjectName("mainWindow");
-    this->setStyleSheet("border-image: url(:/res/char-fly.png) 3 10 3 10");
-    //setStyleSheet("#mainWindow{border-image:transparent;}");
-    //setStyleSheet("#mainWindow{border-image: url(:/res/char-hard.jpg);}");
-    //setAttribute(Qt::WA_TranslucentBackground);
+    this->setStyleSheet(STYLE);
     this->initSize();
 }
 

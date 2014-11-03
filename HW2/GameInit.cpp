@@ -24,29 +24,30 @@ void GameWidget::initLevel() {
     // Level label
     this->levelLabel = new QLabel("Level: ", this);
     levelLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
+    levelLabel->setObjectName("levelLabel");
 
     // Level LCDNumber
     this->levelLCDNumber = new QLCDNumber(this);
     levelLCDNumber->setSegmentStyle(QLCDNumber::Filled);
     levelLCDNumber->display(1);
+    levelLCDNumber->setObjectName("levelLCDNumber");
 
     // Level slider bar
     this->levelSlider = new QSlider(Qt::Horizontal, this);
     levelSlider->setRange(1, 10);
     levelSlider->setValue(1);
+    levelSlider->setObjectName("levelSlider");
     QObject::connect(levelSlider, SIGNAL(valueChanged(int)), levelLCDNumber, SLOT(display(int)));
 }
 void GameWidget::initBackground() {
     // Image label
     this->backgroundImage = new QLabel("", this);
-    /*
-    backgroundImage->setPixmap(QPixmap(BACKGROUND_PATH));
-    */
 }
 void GameWidget::initKeyboardInputLabel() {
     // User keyboard input
     this->keyboardInputLabel = new QLabel(KEYBOARDINPUT, this);
     keyboardInputLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
+    keyboardInputLabel->setObjectName("keyboardInputLabel");
 }
 void GameWidget::initCharacterIcon() {
     // Character icon
@@ -56,7 +57,7 @@ void GameWidget::initCharacterIcon() {
     */
 }
 void GameWidget::initSize() {
-    levelLabel->resize(80, 50);
+    levelLabel->resize(60, 50);
     levelLCDNumber->resize(100, 40);
     levelSlider->resize(50, 50);
     backgroundImage->resize(WINDOWS_WIDTH_MIN/2, WINDOWS_LENGTH_MIN/2);
