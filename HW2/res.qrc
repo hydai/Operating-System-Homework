@@ -4,7 +4,7 @@
     <file>res/char-fly.png</file>
     <file>res/char-hard.jpg</file>
     <file>res/char-mid.jpg</file>
-    <file>res/char-small.jpg</file>
+    <file>res/char-small.png</file>
     <file>res/gg.jpg</file>
     <file>res/sky_scrapers.jpg</file>
 </qresource>
