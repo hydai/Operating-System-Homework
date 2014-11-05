@@ -1,16 +1,13 @@
-#ifndef GAMEITEM_H
-#define GAMEITEM_H
+#ifndef GAMEGOAL_H
+#define GAMEGOAL_H
 
 #include <QtGui>
 
-class GameItem : public QGraphicsItem
+class GameGoal : public QGraphicsItem
 {
 public:
-    bool moveItem(int x, int y);
 
 private:
-    bool isInView(int x, int y);
-    bool isInGoalArea();
     QRectF boundingRect() const;
     void paint(
             QPainter *painter,

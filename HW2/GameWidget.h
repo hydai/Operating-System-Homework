@@ -3,6 +3,8 @@
 #include <QApplication>
 #include <QtGui>
 #include "GameItem.h"
+#include "GameGoal.h"
+
 class GameWidget : public QWidget
 {
     Q_OBJECT
@@ -36,6 +38,10 @@ private:
     QGraphicsScene  *scene;
     QGraphicsView   *gameView;
     GameItem        *heroItem;
+    GameGoal        *goalBanner;
+    // ==================================
+    // Game flag
+    bool isGameOver;
 };
 #endif
 
