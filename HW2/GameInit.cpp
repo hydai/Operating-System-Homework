@@ -47,8 +47,16 @@ void GameWidget::initKeyboardInputLabel() {
 }
 void GameWidget::initGameView() {
     this->gameView = new QGraphicsView(this);
-    this->scene = new QGraphicsScene(0, 0, WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN/2);
+    this->scene = new QGraphicsScene(0, 0, WINDOWS_WIDTH_MIN-60, WINDOWS_LENGTH_MIN/2);
     gameView->setScene(scene);
+    heroItem = new GameItem();
+    goalBanner = new GameGoal();
+    scene->addItem(goalBanner);
+    goalBanner->setX(-10);
+    goalBanner->setY(-130);
+    scene->addItem(heroItem);
+    heroItem->setX(0);
+    heroItem->setY(WINDOWS_LENGTH_MIN/2);
 }
 void GameWidget::initSize() {
     levelLabel->resize(60, 50);

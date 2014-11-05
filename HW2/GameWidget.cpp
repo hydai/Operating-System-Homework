@@ -1,8 +1,9 @@
 #include "GameWidget.h"
+#include "GameItem.h"
 #include "Const.h"
+
 GameWidget::~GameWidget() {
     delete keyboardInputLabel;
-    delete characterIcon;
     delete levelLabel;
     delete levelLCDNumber;
     delete levelSlider;
@@ -13,12 +14,13 @@ GameWidget::~GameWidget() {
     delete containerLayout;
     delete scene;
     delete gameView;
+    delete heroItem;
 }
 void GameWidget::init() {
+    // Reset game status flag
+    this->isGameOver = false;
     // Set up keyboard input label
     this->initKeyboardInputLabel();
-    // Set up character icon
-    this->initCharacterIcon();
     // Set up level infos
     this->initLevel();
     // Set up game view
@@ -35,23 +37,43 @@ void GameWidget::init() {
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
+    if (event->key() == Qt::Key_Q) {
+        QMessageBox::information(this,
+          "PUSHEEN",
+          "Bye~~Bye~~",
+          QMessageBox::Yes,
+          QMessageBox::Yes);
+        close();
+    }
+    if (this->isGameOver) {
+        return;
+    }
     switch (event->key()) {
         case Qt::Key_D:
             keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": D");
+            this->isGameOver = heroItem->moveItem(100, 0);
             break;
         case Qt::Key_S:
             keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": S");
+            this->isGameOver = heroItem->moveItem(0, 100);
             break;
         case Qt::Key_A:
             keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": A");
+            this->isGameOver = heroItem->moveItem(-100, 0);
             break;
         case Qt::Key_W:
             keyboardInputLabel->setText(tr(KEYBOARDINPUT) + ": W");
-            break;
-        case Qt::Key_Q:
-            close();
+            this->isGameOver = heroItem->moveItem(0, -100);
             break;
         default:
             break;
+    }
+    if (this->isGameOver) {
+        QMessageBox::information(NULL,
+          "GOAL",
+          "PUSHEEN MEOW MEOW",
+          QMessageBox::Yes,
+          QMessageBox::Yes);
+        keyboardInputLabel->setText(tr("GOAL, you win!"));
     }
 }
