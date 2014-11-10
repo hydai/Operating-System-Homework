@@ -1,6 +1,5 @@
 <!DOCTYPE RCC><RCC version="1.0">
 <qresource>
-    <file>res/bg.png</file>
     <file>res/goal.png</file>
     <file>res/char-small.png</file>
 </qresource>

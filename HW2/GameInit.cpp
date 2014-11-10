@@ -20,6 +20,7 @@ void GameWidget::initLayout() {
     layout->addWidget(split2);
     this->setLayout(layout);
 }
+
 void GameWidget::initLevel() {
     // Level label
     this->levelLabel = new QLabel("Level: ", this);
@@ -39,12 +40,14 @@ void GameWidget::initLevel() {
     levelSlider->setObjectName("levelSlider");
     QObject::connect(levelSlider, SIGNAL(valueChanged(int)), levelLCDNumber, SLOT(display(int)));
 }
+
 void GameWidget::initKeyboardInputLabel() {
     // User keyboard input
     this->keyboardInputLabel = new QLabel(KEYBOARDINPUT, this);
     keyboardInputLabel->setFont(QFont(FONT_TYPE, FONT_SIZE_LABEL, QFont::Bold));
     keyboardInputLabel->setObjectName("keyboardInputLabel");
 }
+
 void GameWidget::initGameView() {
     this->gameView = new QGraphicsView(this);
     this->scene = new QGraphicsScene(0, 0, WINDOWS_WIDTH_MIN-60, WINDOWS_LENGTH_MIN/2);
@@ -58,10 +61,18 @@ void GameWidget::initGameView() {
     heroItem->setX(0);
     heroItem->setY(WINDOWS_LENGTH_MIN/2);
 }
+
 void GameWidget::initSize() {
     levelLabel->resize(60, 50);
     levelLCDNumber->resize(100, 40);
     levelSlider->resize(50, 50);
     keyboardInputLabel->resize(200, 50);
     this->resize(WINDOWS_WIDTH_MIN, WINDOWS_LENGTH_MIN);
+}
+
+void GameWidget::initPthread() {
+    pthread_mutex_init(&mutexOfGameStatus, NULL);
+    pthread_mutex_init(&mutexOfItemLocation, NULL);
+    pthread_create(&pthCheckGameStatus, NULL, this->checkGameStatus, NULL);
+    pthread_create(&pthCheckItemLocation, NULL, this->checkItemLocation, NULL);
 }

@@ -2,6 +2,7 @@
 #define GAMEWIDGET_H
 #include <QApplication>
 #include <QtGui>
+#include <pthread.h>
 #include "GameItem.h"
 #include "GameGoal.h"
 
@@ -19,6 +20,7 @@ private:
     void initLevel();
     void initLayout();
     void initSize();
+    void initPthread();
     // ==================================
     // Key event
     void keyPressEvent(QKeyEvent *event);
@@ -42,6 +44,17 @@ private:
     // ==================================
     // Game flag
     bool isGameOver;
+    // ==================================
+    // Pthread item
+    pthread_t       pthCheckGameStatus;
+    pthread_t       pthCheckItemLocation;
+    pthread_attr_t  attrOfPthread;
+    pthread_mutex_t mutexOfGameStatus;
+    pthread_mutex_t mutexOfItemLocation;
+    // ==================================
+    // Pthread method
+    static void *checkGameStatus(void *);
+    static void *checkItemLocation(void *);
 };
 #endif
 

@@ -1,6 +1,5 @@
 #include <QApplication>
 #include <QtGui>
-#include <pthread.h>
 #include "Const.h"
 #include "GameWidget.h"
 

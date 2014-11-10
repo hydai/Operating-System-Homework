@@ -16,6 +16,7 @@ GameWidget::~GameWidget() {
     delete gameView;
     delete heroItem;
 }
+
 void GameWidget::init() {
     // Reset game status flag
     this->isGameOver = false;
@@ -34,6 +35,9 @@ void GameWidget::init() {
     this->setObjectName("mainWindow");
     this->setStyleSheet(STYLE);
     this->initSize();
+
+    // Set up pthread items
+    this->initPthread();
 }
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {

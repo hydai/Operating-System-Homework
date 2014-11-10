@@ -54,5 +54,10 @@ const int           BANNER_GOAL_LENGTH      = 150;
 
 // Const string
 const char          KEYBOARDINPUT[]         = "Keyboard Input";
+
+// Map setting
+const int           MAP_LENGTH              = 10;
+const int           MAP_WIDTH               = 5;
+
 #endif
 
