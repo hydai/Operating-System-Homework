@@ -20,6 +20,7 @@ GameWidget::~GameWidget() {
 void GameWidget::init() {
     // Reset game status flag
     this->isGameOver = false;
+    this->isItemInView = true;
     // Set up keyboard input label
     this->initKeyboardInputLabel();
     // Set up level infos

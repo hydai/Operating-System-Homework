@@ -39,18 +39,22 @@ private:
     QSlider         *levelSlider;
     QGraphicsScene  *scene;
     QGraphicsView   *gameView;
-    GameItem        *heroItem;
     GameGoal        *goalBanner;
+    static GameItem *heroItem;
     // ==================================
     // Game flag
-    bool isGameOver;
+    static bool isGameOver;
+    static bool isItemInView;
+    // ==================================
+    // Game variable
+    static QPointF sPoint;
     // ==================================
     // Pthread item
     pthread_t       pthCheckGameStatus;
     pthread_t       pthCheckItemLocation;
     pthread_attr_t  attrOfPthread;
-    pthread_mutex_t mutexOfGameStatus;
-    pthread_mutex_t mutexOfItemLocation;
+    static pthread_mutex_t mutexOfGameStatus;
+    static pthread_mutex_t mutexOfItemLocation;
     // ==================================
     // Pthread method
     static void *checkGameStatus(void *);

@@ -60,6 +60,8 @@ void GameWidget::initGameView() {
     scene->addItem(heroItem);
     heroItem->setX(0);
     heroItem->setY(WINDOWS_LENGTH_MIN/2);
+    heroItem->setGameOverFlag(isGameOver);
+    heroItem->setItemInViewFlag(isItemInView);
 }
 
 void GameWidget::initSize() {
