@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <curses.h>
+//#include <curses.h>
 #include <termios.h>
 #include <fcntl.h>
 int kbhit(void){
