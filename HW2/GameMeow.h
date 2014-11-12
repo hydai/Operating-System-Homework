@@ -1,16 +1,16 @@
-#ifndef GAMEITEM_H
-#define GAMEITEM_H
+#ifndef GAMEMEOW_H
+#define GAMEMEOW_H
 
 #include <QtGui>
 
-class GameItem : public QGraphicsItem
+class GameMeow : public QGraphicsItem
 {
 public:
     bool moveItem(int x, int y);
-    bool isInView(int x, int y);
-    bool isInGoalArea();
 
 private:
+    bool isInView(int x, int y);
+    bool isInGoalArea();
     QRectF boundingRect() const;
     void paint(
             QPainter *painter,

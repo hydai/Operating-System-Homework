@@ -6,6 +6,11 @@ struct ThreadArgs {
     void *(args[10]);
 };
 
+// Game exit code
+const int NORMAL_EXIT   = 0;
+const int WIN_EXIT      = NORMAL_EXIT + 1;
+const int LOSE_EXIT     = WIN_EXIT + 1;
+
 // QT GUI const setting
 // QSS setting
 const char          STYLE[] = "                                         \
@@ -54,5 +59,8 @@ const int           BANNER_GOAL_LENGTH      = 150;
 
 // Const string
 const char          KEYBOARDINPUT[]         = "Keyboard Input";
+
+// Game Const
+const int MEOW_SIZE = 4;
 #endif
 

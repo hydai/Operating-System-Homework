@@ -2,15 +2,27 @@
 #define GAMEWIDGET_H
 #include <QApplication>
 #include <QtGui>
+#include "Const.h"
 #include "GameItem.h"
+#include "GameMeow.h"
 #include "GameGoal.h"
 
 class GameWidget : public QWidget
 {
     Q_OBJECT
 public:
+    // ==================================
+    // Initialize method
     void init();
     ~GameWidget();
+    // ==================================
+    // Speed relative method
+    void setHeroSpeed(int);
+    int getMeowSpeed(int);
+    // ==================================
+    // items
+    GameMeow *meow[MEOW_SIZE];
+    GameItem *heroItem;
 private:
     // ==================================
     // Initialize method
@@ -37,7 +49,6 @@ private:
     QSlider         *levelSlider;
     QGraphicsScene  *scene;
     QGraphicsView   *gameView;
-    GameItem        *heroItem;
     GameGoal        *goalBanner;
     // ==================================
     // Game flag
