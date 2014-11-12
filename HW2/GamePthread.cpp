@@ -2,6 +2,11 @@
 #include "Const.h"
 #include <pthread.h>
 
+void* GameWidget::cGSHelper(void *pointer) {
+    GameWidget *pt = static_cast<GameWidget *> (pointer);
+    pt->checkGameStatus(pointer);
+    return NULL;
+}
 void* GameWidget::checkGameStatus(void *doNothing) {
     while(1) {
         usleep(10000);
@@ -16,6 +21,11 @@ void* GameWidget::checkGameStatus(void *doNothing) {
     pthread_exit(NULL);
 }
 
+void* GameWidget::cILHelper(void *pointer) {
+    GameWidget *pt = static_cast<GameWidget *>(pointer);
+    pt->checkItemLocation(pointer);
+    return NULL;
+}
 void* GameWidget::checkItemLocation(void *doNothing) {
     while(1) {
         usleep(10000);

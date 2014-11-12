@@ -75,6 +75,6 @@ void GameWidget::initSize() {
 void GameWidget::initPthread() {
     pthread_mutex_init(&mutexOfGameStatus, NULL);
     pthread_mutex_init(&mutexOfItemLocation, NULL);
-    pthread_create(&pthCheckGameStatus, NULL, this->checkGameStatus, NULL);
-    pthread_create(&pthCheckItemLocation, NULL, this->checkItemLocation, NULL);
+    pthread_create(&pthCheckGameStatus, NULL, &GameWidget::cGSHelper, this);
+    pthread_create(&pthCheckItemLocation, NULL, &GameWidget::cILHelper, this);
 }

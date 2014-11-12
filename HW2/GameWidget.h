@@ -40,25 +40,27 @@ private:
     QGraphicsScene  *scene;
     QGraphicsView   *gameView;
     GameGoal        *goalBanner;
-    static GameItem *heroItem;
+    GameItem *heroItem;
     // ==================================
     // Game flag
-    static bool isGameOver;
-    static bool isItemInView;
+    bool isGameOver;
+    bool isItemInView;
     // ==================================
     // Game variable
-    static QPointF sPoint;
+    QPointF sPoint;
     // ==================================
     // Pthread item
     pthread_t       pthCheckGameStatus;
     pthread_t       pthCheckItemLocation;
     pthread_attr_t  attrOfPthread;
-    static pthread_mutex_t mutexOfGameStatus;
-    static pthread_mutex_t mutexOfItemLocation;
+    pthread_mutex_t mutexOfGameStatus;
+    pthread_mutex_t mutexOfItemLocation;
     // ==================================
     // Pthread method
-    static void *checkGameStatus(void *);
-    static void *checkItemLocation(void *);
+    static void *cGSHelper(void *);
+    void *checkGameStatus(void *);
+    static void *cILHelper(void *);
+    void *checkItemLocation(void *);
 };
 #endif
 

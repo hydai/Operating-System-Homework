@@ -55,3 +55,15 @@ QPointF &GameItem::getQP() {
     QPointF pos = this->scenePos();
     return pos;
 }
+void GameItem::setGameOverFlag(bool &flag) {
+    this->isGameOver = flag;
+}
+void GameItem::setItemInViewFlag(bool &flag) {
+    this->isItemInView = flag;
+}
+double GameItem::getVX() {
+    return vx;
+}
+double GameItem::getVY() {
+    return vy;
+}
