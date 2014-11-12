@@ -40,7 +40,7 @@ GameStage::GameStage() {
     for (int i = 0; i < ROW; i++) {
         args.tid = &i;
         pthread_create(&woodThreads[i], NULL, &GameStage::pthreadHelper, (void *)&args);
-        usleep(SLEEP_TIME);
+        usleep(100000);
     }
 }
 
@@ -71,7 +71,7 @@ void GameStage::exec() {
 }
 
 bool GameStage::isInMap(int x, int y) {
-    return x >= 0 && x < COL && y >= 0 && y < ROW;
+    return x >= 0 && x < ROW && y >= 0 && y < COL;
 }
 
 void* GameStage::pthreadHelper(void *in) {
@@ -82,7 +82,7 @@ void* GameStage::pthreadHelper(void *in) {
 void* GameStage::woodHandler(void *tid) {
     int currentID = *(int *)tid;
     while (gameStatus == NORMAL) {
-        printf("\nQAQ ID = %d gs = %d\n", currentID, gameStatus);
+        //printf("\nQAQ ID = %d gs = %d\n", currentID, gameStatus);
         pthread_mutex_lock(&mutexGraph);
         // currentID is odd     <-
         // currentID is even    ->
@@ -146,6 +146,10 @@ void* GameStage::woodHandler(void *tid) {
             gameStatus = LOSE_EXIT;
         } else if (frog->getX() == 0) {
             gameStatus = WIN_EXIT;
+            graph[frog->getX()][frog->getY()] = '^';
+            printf("\033[0;0H\033[2J");
+            usleep(SLEEP_TIME);
+            dumpGraph();
         }
 
         // Move frog on the wood
@@ -159,10 +163,12 @@ void* GameStage::woodHandler(void *tid) {
                 }
             }
             graph[frog->getX()][frog->getY()] = '^';
+            printf("\033[0;0H\033[2J");
+            usleep(SLEEP_TIME);
             dumpGraph();
         }
         pthread_mutex_unlock(&mutexGraph);
-        usleep(woodSpeed[currentID] * SLEEP_TIME * SLEEP_TIME);
+        usleep(woodSpeed[currentID] * SLEEP_TIME);
     }
     pthread_exit(NULL);
 }

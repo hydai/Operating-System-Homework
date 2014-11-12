@@ -5,7 +5,7 @@
 extern int kbhit(void);
 
 // Game graph
-const int ROW = 20;
+const int ROW = 10;
 const int COL = 40;
 
 // Game status
