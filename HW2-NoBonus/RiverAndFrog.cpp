@@ -27,7 +27,11 @@ GameStage::GameStage() {
     }
     
     // Init frog
-    frog = new Frog(ROW, COL/2);
+    frog = new Frog(ROW-1, COL/2);
+    graph[frog->getX()][frog->getY()] = '^';
+    for (int i = 0; i < ROW; i++) {
+        puts(graph[i]);
+    }
 
     // Init help args
     ThreadArgs args;
@@ -36,6 +40,7 @@ GameStage::GameStage() {
     for (int i = 0; i < ROW; i++) {
         args.tid = &i;
         pthread_create(&woodThreads[i], NULL, &GameStage::pthreadHelper, (void *)&args);
+        usleep(SLEEP_TIME);
     }
 }
 
@@ -77,6 +82,7 @@ void* GameStage::pthreadHelper(void *in) {
 void* GameStage::woodHandler(void *tid) {
     int currentID = *(int *)tid;
     while (gameStatus == NORMAL) {
+        printf("\nQAQ ID = %d gs = %d\n", currentID, gameStatus);
         pthread_mutex_lock(&mutexGraph);
         // currentID is odd     <-
         // currentID is even    ->
@@ -156,7 +162,7 @@ void* GameStage::woodHandler(void *tid) {
             dumpGraph();
         }
         pthread_mutex_unlock(&mutexGraph);
-        usleep(woodSpeed[currentID] * SLEEP_TIME);
+        usleep(woodSpeed[currentID] * SLEEP_TIME * SLEEP_TIME);
     }
     pthread_exit(NULL);
 }
