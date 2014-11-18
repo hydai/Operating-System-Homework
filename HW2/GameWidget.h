@@ -4,6 +4,7 @@
 #include <QtGui>
 #include <pthread.h>
 #include "GameItem.h"
+#include "GameMeow.h"
 #include "GameGoal.h"
 
 class GameWidget : public QWidget
@@ -44,10 +45,13 @@ private:
     // ==================================
     // Game flag
     bool isGameOver;
+    bool isGameOverPt;
     bool isItemInView;
+    bool isItemInViewPt;
     // ==================================
     // Game variable
     QPointF sPoint;
+    GameMeow        *meows[4];
     // ==================================
     // Pthread item
     pthread_t       pthCheckGameStatus;

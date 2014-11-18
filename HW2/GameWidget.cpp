@@ -15,6 +15,8 @@ GameWidget::~GameWidget() {
     delete scene;
     delete gameView;
     delete heroItem;
+    for (int i = 0; i < 4; i++)
+        delete meows[i];
 }
 
 void GameWidget::init() {
@@ -43,8 +45,8 @@ void GameWidget::init() {
 
 void GameWidget::keyPressEvent(QKeyEvent *event) {
     if (event->key() == Qt::Key_Q) {
-        QMessageBox::information(this,
-          "PUSHEEN",
+        QMessageBox::information(NULL,
+          "QUIT Game",
           "Bye~~Bye~~",
           QMessageBox::Yes,
           QMessageBox::Yes);
@@ -76,7 +78,7 @@ void GameWidget::keyPressEvent(QKeyEvent *event) {
     if (this->isGameOver) {
         QMessageBox::information(NULL,
           "GOAL",
-          "PUSHEEN MEOW MEOW",
+          "You Win !!!",
           QMessageBox::Yes,
           QMessageBox::Yes);
         keyboardInputLabel->setText(tr("GOAL, you win!"));

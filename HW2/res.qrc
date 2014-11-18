@@ -2,5 +2,6 @@
 <qresource>
     <file>res/goal.png</file>
     <file>res/char-small.png</file>
+    <file>res/pusheen.png</file>
 </qresource>
 </RCC>

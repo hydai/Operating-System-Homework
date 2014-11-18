@@ -13,9 +13,9 @@ void* GameWidget::checkGameStatus(void *doNothing) {
         pthread_mutex_lock (&mutexOfGameStatus);
         QPointF position = heroItem->getQP();
         if (position.y() < 0)
-            isGameOver = true;
+            isGameOverPt = true;
         else
-            isGameOver = false;
+            isGameOverPt = false;
         pthread_mutex_unlock (&mutexOfGameStatus);
     }
     pthread_exit(NULL);
@@ -37,9 +37,9 @@ void* GameWidget::checkItemLocation(void *doNothing) {
           || position.x()+x > WINDOWS_WIDTH_MIN-120
           || position.y()+y < -120
           || position.y()+y > WINDOWS_LENGTH_MIN/2) {
-            isItemInView = false;
+            isItemInViewPt = false;
         } else {
-            isItemInView = true;
+            isItemInViewPt = true;
         }
         pthread_mutex_unlock (&mutexOfItemLocation);
     }

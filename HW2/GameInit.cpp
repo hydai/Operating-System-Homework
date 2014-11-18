@@ -57,6 +57,12 @@ void GameWidget::initGameView() {
     scene->addItem(goalBanner);
     goalBanner->setX(-10);
     goalBanner->setY(-130);
+    for (int i = 0; i < 4; i++) {
+        meows[i] = new GameMeow();
+        meows[i]->setX(0);
+        meows[i]->setY(WINDOWS_LENGTH_MIN/(2*(i+1)));
+        scene->addItem(meows[i]);
+    }
     scene->addItem(heroItem);
     heroItem->setX(0);
     heroItem->setY(WINDOWS_LENGTH_MIN/2);

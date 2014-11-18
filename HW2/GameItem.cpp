@@ -16,19 +16,9 @@ void GameItem::paint(
 bool GameItem::moveItem(int x, int y) {
     vx = x;
     vy = y;
-    usleep(10000);
-    /*
     if (isInView(x, y))
         moveBy(x, y);
-    */
-    if (isItemInView)
-        moveBy(x, y);
-    /*
     if (isInGoalArea()) {
-        return true;
-    }
-    */
-    if (isGameOver) {
         return true;
     }
     return false;

@@ -49,6 +49,8 @@ const char          BACKGROUND_PATH[]       = ":/res/bg.png";
 
 // IMAGE size setting
 const int           PAINTER_WIDTH           = 100;
+const int           PUSHEEN_LENGTH          = 80;
+const int           PUSHEEN_WIDTH           = 300;
 const int           BANNER_GOAL_WIDTH       = 1200;
 const int           BANNER_GOAL_LENGTH      = 150;
 
