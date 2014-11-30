@@ -31,7 +31,7 @@ extern __shared__ u32 pageTable[];
 // Initialize
 __device__ void initPageTable(int entries) {
     for (int i = 0; i < entries; i++) {
-        pageTable[i] = INVALID;
+        pageTable[i] = DNE;
 		LRU[i] = 0;
     }
 }
@@ -77,12 +77,12 @@ __device__ u32 makePTE(u32 time, u32 pageNumber, u32 validbit) {
 	return (time << 14) | (pageNumber << 1) | validbit;
 }
 __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
-	u32 addr = pageNumber*PAGE_SIZE + pageOffset;
+	CURRENTTIME++;
+
 	// Find if the target page exists
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (pageTable[i] == addr) {
+		if (pageTable[i] == pageNumber) {
 			// Update time
-			CURRENTTIME++;
 			LRU[i] = CURRENTTIME;
 			return i * PAGE_SIZE + pageOffset;
 		}
@@ -90,12 +90,11 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 
 	// Find if there is a empty entry to place
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (LRU[i] == 0) {
+		if (pageTable[i] == DNE) {
 			// Because of a empty hole, it must be a pagefault
 			PAGEFAULT++;
 			// Update PTE
-			pageTable[i] = addr;
-			CURRENTTIME++;
+			pageTable[i] = pageNumber;
 			LRU[i] = CURRENTTIME;
 			return i * PAGE_SIZE + pageOffset;
 		}
@@ -112,9 +111,8 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	}
 	// Replace & update infos
 	PAGEFAULT++;
-	pageTable[leastEntry] = addr;
-	CURRENTTIME++;
-	LRU[leastEntry] = CURRENTTIME
+	pageTable[leastEntry] = pageNumber;
+	LRU[leastEntry] = CURRENTTIME;
 	return leastEntry * PAGE_SIZE + pageOffset;
 }
 
@@ -163,7 +161,8 @@ __global__ void mykernel(int input_size) {
 
 int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
-    cudaSetDevice(2);
+	printf("Loading...\n");
+    //cudaSetDevice(2);
     mykernel<<<1, 1, 16384>>>(input_size);
     cudaDeviceSynchronize();
     cudaDeviceReset();
