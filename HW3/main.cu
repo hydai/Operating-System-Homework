@@ -12,8 +12,8 @@ typedef unsigned char uchar;
 typedef uint32_t u32;
 const uint32_t VALID    		= 0 | 1;
 const uint32_t INVALID			= 0;
-const uint32_t PAGENUMBERMASK	= 0x00003FFE;
-const uint32_t LASTTIMEMASK		= 0xFFFFC000;
+const uint32_t PAGENUMBERMASK	= 0x00001FFE;
+const uint32_t LASTTIMEMASK		= 0xFFFFE000;
 const uint32_t DNE				= 0xFFFFFFFF;
 
 // Declare variables
@@ -69,10 +69,10 @@ __device__ inline u32 getPageNumber(u32 PTE) {
 	return (PTE & PAGENUMBERMASK) >> 1;
 }
 __device__ inline u32 getLastUsedTime(u32 PTE) {
-	return (PTE & LASTTIMEMASK) >> 14;
+	return (PTE & LASTTIMEMASK) >> 13;
 }
 __device__ inline u32 makePTE(u32 time, u32 pageNumber, u32 validbit) {
-	return (time << 14) | (pageNumber << 1) | validbit;
+	return (time << 13) | (pageNumber << 1) | validbit;
 }
 __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	// ******************************************************************** //
@@ -175,6 +175,8 @@ __global__ void mykernel(int input_size) {
 
 int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
+    printf("pagefault times = %d\n", PAGEFAULT);
+    printf("input_size = %d\n", input_size);
     cudaSetDevice(2);
     mykernel<<<1, 1, 16384>>>(input_size);
     cudaDeviceSynchronize();
