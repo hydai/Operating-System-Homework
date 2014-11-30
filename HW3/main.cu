@@ -103,7 +103,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 			// Update PTE
 			pageTable[i] = makePTE(CURRENTTIME, pageNumber, VALID);
 			CURRENTTIME++;
-			return i*PAGE_SIZE + pageOffset;
+			return i * PAGE_SIZE + pageOffset;
 		}
 	}
 
@@ -111,13 +111,6 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	u32 leastEntry = DNE;
 	u32 leastTime  = DNE;
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		/*
-		u32 tmp = CURRENTTIME - getLastUsedTime(pageTable[i]);
-		if (tmp > leastTime) {
-			leastTime = tmp;
-			leastTime = i;
-		}
-		*/
 		if (leastTime > getLastUsedTime(pageTable[i])) {
 			leastTime = getLastUsedTime(pageTable[i]);
 			leastEntry = i;
@@ -177,19 +170,17 @@ __global__ void mykernel(int input_size) {
 	//the last line of Gwrite/Gread code section should be snapshot ()
 	snapshot(results, data, 0, input_size);
 	//###Gwrite/Gread code section end### 
+    printf("pagefault times = %d\n", PAGEFAULT);
 }
 // ******************************************************************
 
 int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
-    printf("pagefault times = %d\n", PAGEFAULT);
-    printf("input_size = %d\n", input_size);
-    //cudaSetDevice(2);
+    cudaSetDevice(2);
     mykernel<<<1, 1, 16384>>>(input_size);
     cudaDeviceSynchronize();
     cudaDeviceReset();
 
     writeBinaryFile(OUTPUTFILE, results, input_size);
-    printf("pagefault times = %d\n", PAGEFAULT);
     return 0;
 }
