@@ -87,9 +87,9 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 
 	// Find if the target page exists
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (isValid(pt[i]) && pageNumber == getPageNumber(pt[i])) {
+		if (isValid(pageTable[i]) && pageNumber == getPageNumber(pageTable[i])) {
 			// Update time
-			pt[i] = makePTE(CURRENTTIME, pageNumber, VALID);
+			pageTable[i] = makePTE(CURRENTTIME, pageNumber, VALID);
 			CURRENTTIME++;
 			return i * PAGE_SIZE + pageOffset;
 		}
@@ -97,11 +97,11 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 
 	// Find if there is a empty entry to place
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (!isValid(pt[i])) {
+		if (!isValid(pageTable[i])) {
 			// Because of a empty hole, it must be a pagefault
 			PAGEFAULT++;
 			// Update PTE
-			pt[i] = makePTE(CURRENTTIME, pageNumber, VALID);
+			pageTable[i] = makePTE(CURRENTTIME, pageNumber, VALID);
 			CURRENTTIME++;
 			return i*PAGE_SIZE + pageOffset;
 		}
@@ -111,14 +111,14 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	u32 leastEntry = DNE;
 	u32 leastTime  = DNE;
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (leastTime > getLastUsedTime(pt[i])) {
-			leastTime = getLastUsedTime(pt[i]);
+		if (leastTime > getLastUsedTime(pageTable[i])) {
+			leastTime = getLastUsedTime(pageTable[i]);
 			leastEntry = i;
 		}
 	}
 	// Replace & update infos
 	PAGEFAULT++;
-	for (u32 i = getPageNumber(pt[leastEntry]), j = 0;
+	for (u32 i = getPageNumber(pageTable[leastEntry]), j = 0;
 			j < PAGE_SIZE;
 			i++, j++) {
 		u32 memoryAddress = leastEntry * PAGE_SIZE + j;
@@ -126,7 +126,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 		storage[i] = memory[memoryAddress];
 		memory[memoryAddress] = storage[storageAddress];
 	}
-	pt[leastEntry] = makePTE(CURRENTTIME, pageOffset, VALID);
+	pageTable[leastEntry] = makePTE(CURRENTTIME, pageOffset, VALID);
 	CURRENTTIME++;
 	return leastEntry * PAGE_SIZE + pageOffset;
 }
