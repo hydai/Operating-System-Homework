@@ -12,8 +12,8 @@ typedef unsigned char uchar;
 typedef uint32_t u32;
 const uint32_t VALID    		= 0 | 1;
 const uint32_t INVALID			= 0;
-const uint32_t PAGENUMBERMASK	= 0x00001FFE;
-const uint32_t LASTTIMEMASK		= 0xFFFFE000;
+const uint32_t PAGENUMBERMASK	= 0x00003FFE;
+const uint32_t LASTTIMEMASK		= 0xFFFFC000;
 const uint32_t DNE				= 0xFFFFFFFF;
 
 // Declare variables
@@ -62,17 +62,17 @@ void writeBinaryFile(char *fileName, uchar *input, int storageSize) {
 
 // ******************************************************************
 // Read/Write
-__device__ inline u32 isValid(u32 PTE) {
+__device__ u32 isValid(u32 PTE) {
 	return PTE & VALID;
 }
-__device__ inline u32 getPageNumber(u32 PTE) {
+__device__ u32 getPageNumber(u32 PTE) {
 	return (PTE & PAGENUMBERMASK) >> 1;
 }
-__device__ inline u32 getLastUsedTime(u32 PTE) {
-	return (PTE & LASTTIMEMASK) >> 13;
+__device__ u32 getLastUsedTime(u32 PTE) {
+	return (PTE & LASTTIMEMASK) >> 14;
 }
-__device__ inline u32 makePTE(u32 time, u32 pageNumber, u32 validbit) {
-	return (time << 13) | (pageNumber << 1) | validbit;
+__device__ u32 makePTE(u32 time, u32 pageNumber, u32 validbit) {
+	return (time << 14) | (pageNumber << 1) | validbit;
 }
 __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	// ******************************************************************** //
@@ -97,7 +97,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 
 	// Find if there is a empty entry to place
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (!isValid(pageTable[i])) {
+		if (isValid(pageTable[i]) == 0) {
 			// Because of a empty hole, it must be a pagefault
 			PAGEFAULT++;
 			// Update PTE
@@ -111,6 +111,13 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	u32 leastEntry = DNE;
 	u32 leastTime  = DNE;
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
+		/*
+		u32 tmp = CURRENTTIME - getLastUsedTime(pageTable[i]);
+		if (tmp > leastTime) {
+			leastTime = tmp;
+			leastTime = i;
+		}
+		*/
 		if (leastTime > getLastUsedTime(pageTable[i])) {
 			leastTime = getLastUsedTime(pageTable[i]);
 			leastEntry = i;
@@ -126,7 +133,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 		storage[i] = memory[memoryAddress];
 		memory[memoryAddress] = storage[storageAddress];
 	}
-	pageTable[leastEntry] = makePTE(CURRENTTIME, pageOffset, VALID);
+	pageTable[leastEntry] = makePTE(CURRENTTIME, pageNumber, VALID);
 	CURRENTTIME++;
 	return leastEntry * PAGE_SIZE + pageOffset;
 }
@@ -177,7 +184,7 @@ int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
     printf("pagefault times = %d\n", PAGEFAULT);
     printf("input_size = %d\n", input_size);
-    cudaSetDevice(2);
+    //cudaSetDevice(2);
     mykernel<<<1, 1, 16384>>>(input_size);
     cudaDeviceSynchronize();
     cudaDeviceReset();
