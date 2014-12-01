@@ -127,8 +127,9 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 			j++) {
 		u32 memoryAddress = leastEntry * PAGE_SIZE + j;
 		u32 storageAddress = pageNumber * PAGE_SIZE + j;
-		storage[storageAddress] = memory[memoryAddress];
-		memory[memoryAddress] = input[storageAddress];
+		u32 toStorageAddress = getPageNumber(pageTable[leastEntry]) * PAGE_SIZE + j;
+		storage[toStorageAddress] = memory[memoryAddress];
+		memory[memoryAddress] = storage[storageAddress];
 	}
 	pageTable[leastEntry] = makePTE(CURRENTTIME, pageNumber, VALID);
 	return leastEntry * PAGE_SIZE + pageOffset;
