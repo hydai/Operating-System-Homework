@@ -15,6 +15,7 @@ const uint32_t VALID    		= 0 | 1;
 const uint32_t INVALID			= 0;
 const uint32_t PAGENUMBERMASK	= 0x00003FFE;
 const uint32_t LASTTIMEMASK		= 0xFFFFC000;
+const uint32_t PIDMASK			= 0xC0000000;
 const uint32_t DNE				= 0xFFFFFFFF;
 
 // Lock & Unlock
@@ -67,6 +68,9 @@ void writeBinaryFile(char *fileName, uchar *input, int storageSize) {
 
 // ******************************************************************
 // Read/Write
+__device__ u32 getPid(u32 PTE) {
+	return (PTE & PIDMASK) >> 30;
+}
 __device__ u32 isValid(u32 PTE) {
 	return PTE & VALID;
 }
@@ -76,26 +80,28 @@ __device__ u32 getPageNumber(u32 PTE) {
 __device__ u32 getLastUsedTime(u32 PTE) {
 	return (PTE & LASTTIMEMASK) >> 14;
 }
-__device__ u32 makePTE(u32 time, u32 pageNumber, u32 validbit) {
-	return (time << 14) | (pageNumber << 1) | validbit;
+__device__ u32 makePTE(u32 pid, u32 time, u32 pageNumber, u32 validbit) {
+	return (pid << 30) | (time << 14) | (pageNumber << 1) | validbit;
 }
 __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	// ******************************************************************** //
 	// How I store infomation in a PTE:										//
-	// |------------------|-------------|-|									//
-	// |332222222222111111|1111-8-6-4-2-|0|									//
-	// |109876543210987654|32109-7-5-3-1|-|									//
-	// |------------------|-------------|-|									//
-	// |  Last used time  | Page Number | | <-- last one bit is valid bit	//
-	// |------------------|-------------|-|									//
+	// |--|----------------|-------------|-|								//
+	// |33|2222222222111111|1111-8-6-4-2-|0|								//
+	// |10|9876543210987654|32109-7-5-3-1|-|								//
+	// |--|----------------|-------------|-|								//
+	// |  |Last used time  | Page Number | | <-- last one bit is valid bit	//
+	// |--|----------------|-------------|-|								//
 	// ******************************************************************** //
 
 	CURRENTTIME++;
 	// Find if the target page exists
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (isValid(pageTable[i]) && pageNumber == getPageNumber(pageTable[i])) {
+		if (isValid(pageTable[i]) 
+			&& threadIdx.x == getPid(pageTable[i]) 
+			&& pageNumber == getPageNumber(pageTable[i])) {
 			// Update time
-			pageTable[i] = makePTE(CURRENTTIME, pageNumber, VALID);
+			pageTable[i] = makePTE(threadIdx.x, CURRENTTIME, pageNumber, VALID);
 			return i * PAGE_SIZE + pageOffset;
 		}
 	}
@@ -106,7 +112,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 			// Because of a empty hole, it must be a pagefault
 			PAGEFAULT++;
 			// Update PTE
-			pageTable[i] = makePTE(CURRENTTIME, pageNumber, VALID);
+			pageTable[i] = makePTE(threadIdx.x, CURRENTTIME, pageNumber, VALID);
 			return i * PAGE_SIZE + pageOffset;
 		}
 	}
@@ -115,7 +121,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 	u32 leastEntry = DNE;
 	u32 leastTime  = DNE;
 	for (u32 i = 0; i < PAGE_ENTRIES; i++) {
-		if (leastTime > getLastUsedTime(pageTable[i])) {
+		if (leastTime > getLastUsedTime(pageTable[i]) && threadIdx.x == getPid(pageTable[i])) {
 			leastTime = getLastUsedTime(pageTable[i]);
 			leastEntry = i;
 		}
@@ -131,7 +137,7 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 		storage[toStorageAddress] = memory[memoryAddress];
 		memory[memoryAddress] = storage[storageAddress];
 	}
-	pageTable[leastEntry] = makePTE(CURRENTTIME, pageNumber, VALID);
+	pageTable[leastEntry] = makePTE(threadIdx.x, CURRENTTIME, pageNumber, VALID);
 	return leastEntry * PAGE_SIZE + pageOffset;
 }
 
@@ -187,7 +193,7 @@ __global__ void mykernel(int input_size) {
 
 int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
-    cudaSetDevice(2);
+    cudaSetDevice(4);
     mykernel<<<1, 4, 16384>>>(input_size/4);
     cudaDeviceSynchronize();
     cudaDeviceReset();
