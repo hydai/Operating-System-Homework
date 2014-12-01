@@ -36,3 +36,9 @@ tmp.*
 
 # mac
 .DS_Store
+
+# ctags file
+tags
+
+# pptx
+*.pptx
