@@ -1,7 +1,7 @@
 all:
-	nvcc -arch=sm_30 main.cu -o vm-hd
+	nvcc -arch=sm_30 main.cu -o vm
 
 debug:
 	nvcc -arch=sm_30 main.cu -g -G -o vm-debug
 clean:
-	rm vm-hd vm-debug
+	rm vm vm-debug
