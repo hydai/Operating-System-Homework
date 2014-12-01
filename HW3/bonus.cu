@@ -5,6 +5,7 @@
 // Define constants and data types
 #define PAGE_SIZE           32
 #define PHYSICAL_MEM_SIZE   32768
+#define MEMMORY_SEGMENT		32768
 #define STORAGE_SIZE        131072
 #define DATAFILE            "./data.bin"
 #define OUTPUTFILE          "./snapshot.bin"
@@ -16,6 +17,10 @@ const uint32_t PAGENUMBERMASK	= 0x00003FFE;
 const uint32_t LASTTIMEMASK		= 0xFFFFC000;
 const uint32_t DNE				= 0xFFFFFFFF;
 
+// Lock & Unlock
+#define __LOCK();	for(int p = 0; p < 4; p++) {if(threadIdx.x == p) {
+#define __UNLOCK();	} __syncthreads(); }
+#define __GET_BASE() p*MEMMORY_SEGMENT
 // Declare variables
 __device__ __managed__ int PAGE_ENTRIES = 0;
 __device__ __managed__ int PAGEFAULT = 0;
@@ -122,9 +127,8 @@ __device__ u32 paging(uchar *memory, u32 pageNumber, u32 pageOffset) {
 			j++) {
 		u32 memoryAddress = leastEntry * PAGE_SIZE + j;
 		u32 storageAddress = pageNumber * PAGE_SIZE + j;
-		u32 toStorageAddress = getPageNumber(pageTable[leastEntry]) * PAGE_SIZE + j;
-		storage[toStorageAddress] = memory[memoryAddress];
-		memory[memoryAddress] = storage[storageAddress];
+		storage[storageAddress] = memory[memoryAddress];
+		memory[memoryAddress] = input[storageAddress];
 	}
 	pageTable[leastEntry] = makePTE(CURRENTTIME, pageNumber, VALID);
 	return leastEntry * PAGE_SIZE + pageOffset;
@@ -158,28 +162,36 @@ __device__ void snapshot(uchar *result, uchar *memory, int offset, int input_siz
 __global__ void mykernel(int input_size) {
     __shared__ uchar data[PHYSICAL_MEM_SIZE];
     PAGE_ENTRIES = PHYSICAL_MEM_SIZE/PAGE_SIZE;
-    initPageTable(PAGE_ENTRIES);
+	if (threadIdx.x == 0)
+    	initPageTable(PAGE_ENTRIES);
+	
 	//##Gwrite / Gread code section start###
-	for(int i = 0; i < input_size; i++) {
-		Gwrite(data, i, input[i]);
-	}
+	__LOCK();
+		for(int i = 0; i < input_size; i++) {
+			Gwrite(data, i+__GET_BASE(), input[i+__GET_BASE()]);
+		}
+	__UNLOCK();
 	for(int i = input_size - 1; i >= input_size - 10; i--) {
-		int value = Gread(data, i);
+		__LOCK();
+			int value = Gread(data, i+__GET_BASE());
+		__UNLOCK();
 	}
 	//the last line of Gwrite/Gread code section should be snapshot ()
-	snapshot(results, data, 0, input_size);
+	__LOCK();
+		snapshot(results+__GET_BASE(), data, __GET_BASE(), input_size);
+	__UNLOCK();
 	//###Gwrite/Gread code section end### 
-    printf("pagefault times = %d\n", PAGEFAULT);
 }
 // ******************************************************************
 
 int main() {
     int input_size = loadBinaryFile(DATAFILE, input, STORAGE_SIZE);
     cudaSetDevice(2);
-    mykernel<<<1, 1, 16384>>>(input_size);
+    mykernel<<<1, 4, 16384>>>(input_size/4);
     cudaDeviceSynchronize();
     cudaDeviceReset();
 
     writeBinaryFile(OUTPUTFILE, results, input_size);
+    printf("pagefault times = %d\n", PAGEFAULT);
     return 0;
 }
