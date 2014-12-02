@@ -7,4 +7,4 @@ bonus:
 debug:
 	nvcc -arch=sm_30 main.cu -g -G -o vm-debug
 clean:
-	rm vm mvm vm-bonus
+	rm vm mvm vm-debug
