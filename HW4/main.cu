@@ -17,7 +17,7 @@ const int RM        = 5;
 const int RM_RF     = 6;
 
 // Declare variables
-__device__ /*__managed__*/ uchar *volume;
+__device__ __managed__ uchar *volume;
 
 // Function
 // ******************************************************************
@@ -57,23 +57,28 @@ void writeBinaryFile(char *fileName, uchar *input, int fileSize) {
 // FS Operation
 __device__ u32 open(char *name, int type) {
     u32 fp = 0;
+    printf("Open %s %d\n", name, type);
     return fp;
 }
 
 __device__ void write(uchar *src, int len, u32 fp) {
     // Not implement
+    printf("Write %s %d %d\n", src, len, fp);
 }
 
 __device__ void read(uchar *dst, int len, u32 fp) {
     // Not implement
+    printf("Read %s %d %d\n", dst, len, fp);
 }
 
 __device__ void gsys(int type) {
     // Not implement
+    printf("Gsys %d\n", type);
 }
 
 __device__ void gsys(int type, char *name) {
     // Not implement
+    printf("Gsys %d %s\n", type, name);
 }
 
 // ******************************************************************
@@ -108,6 +113,9 @@ int main() {
     uchar *input, *output;
     cudaMallocManaged(&input, MAX_FILE_SIZE);
     cudaMallocManaged(&output, MAX_FILE_SIZE);
+    for (int i = 0; i < MAX_FILE_SIZE; i++) {
+        output[i] = 0;
+    }
     loadBinaryFile(DATAFILE, input, MAX_FILE_SIZE);
 
     cudaSetDevice(2);
