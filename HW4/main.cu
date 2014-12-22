@@ -7,6 +7,8 @@
 #define STORAGE_SIZE        1085440
 #define DATAFILE            "./data.bin"
 #define OUTPUTFILE          "./snapshot.bin"
+#define FILE_ENTRIES		1024
+#define DNE					0xffffffff
 typedef unsigned char uchar;
 typedef uint32_t u32;
 const int G_WRITE   = 1;
@@ -23,14 +25,15 @@ __device__ __managed__ uchar *volume;
 // ******************************************************************
 // Initialize
 void init_volume() {
-    memset(volume, 0, STORAGE_SIZE*sizeof(uchar));
+	for (int i = 0; i < STORAGE_SIZE; i++) {
+		volume[i] = 0;
+	}
 }
-
 // ******************************************************************
 
 // ******************************************************************
 // File I/O
-int loadBinaryFile(char *fileName, uchar *input, int fileSize) {
+int loadBinaryFile(const char *fileName, uchar *input, int fileSize) {
     FILE *fptr = fopen(fileName, "rb");
     // Get size
     fseek(fptr, 0, SEEK_END);
@@ -45,7 +48,7 @@ int loadBinaryFile(char *fileName, uchar *input, int fileSize) {
     return size;
 }
 
-void writeBinaryFile(char *fileName, uchar *input, int fileSize) {
+void writeBinaryFile(const char *fileName, uchar *input, int fileSize) {
     FILE *fptr = fopen(fileName, "wb");
     // Read data from input file
     fwrite(input, sizeof(unsigned char), fileSize, fptr);
@@ -54,30 +57,75 @@ void writeBinaryFile(char *fileName, uchar *input, int fileSize) {
 // ******************************************************************
 
 // ******************************************************************
+// FS Helper function
+__device__ u32 getFid(const char *name) {
+	u32 fid = DNE;
+	for (u32 i = 0; i < FILE_ENTRIES; i++) {
+		if (isNameMatched(i, name)) {
+			fid = i;
+			break;
+		}
+	}
+	if (fid == DNE) {
+		fid = createNewFile(name);
+	}
+	return fid;
+}
+// ******************************************************************
+
+// ******************************************************************
 // FS Operation
-__device__ u32 open(char *name, int type) {
-    u32 fp = 0;
+__device__ u32 open(const char *name, int type) {
     printf("Open %s %d\n", name, type);
-    return fp;
+	u32 fid = getFid(name);
+    return fid;
 }
 
-__device__ void write(uchar *src, int len, u32 fp) {
-    // Not implement
-    printf("Write %s %d %d\n", src, len, fp);
+__device__ void write(uchar *src, int len, u32 fid) {
+	updateFileSize(fid, len);
+	updateFileModifyTime(fid);
+	u32 entry = getFileDataAddress(fid);
+	for (u32 i = 0; i < len; i++) {
+		updateData(entry+i,src[i]);
+	}
+    printf("Write %s %d %d\n", src, len, fid);
 }
 
-__device__ void read(uchar *dst, int len, u32 fp) {
-    // Not implement
-    printf("Read %s %d %d\n", dst, len, fp);
+__device__ void read(uchar *dst, int len, u32 fid) {
+	u32 entry = getFileDataAddress(fid);
+	for (u32 i = 0; i < len; i++) {
+		dst[i] = getData(entry+i);
+	}
+    printf("Read %s %d %d\n", dst, len, fid);
 }
 
 __device__ void gsys(int type) {
-    // Not implement
+	switch (type) {
+		case LS_D:
+			sortD();
+			printD();
+			break;
+		case LS_S:
+			sortS();
+			printS();
+			break;
+		default:
+			sortS();
+			printS();
+			break;
+	}
     printf("Gsys %d\n", type);
 }
 
-__device__ void gsys(int type, char *name) {
-    // Not implement
+__device__ void gsys(int type, const char *name) {
+	switch (type) {
+		case RM:
+			deleteFileByName(name);
+			break;
+		default:
+			deleteFileByName(name);
+			break;
+	}
     printf("Gsys %d %s\n", type, name);
 }
 
@@ -108,6 +156,7 @@ __global__ void mykernel(uchar *input, uchar *output) {
 
 int main() {
     cudaMallocManaged(&volume, STORAGE_SIZE);
+	printf("B init\n");
     init_volume();
 
     uchar *input, *output;
@@ -117,6 +166,7 @@ int main() {
         output[i] = 0;
     }
     loadBinaryFile(DATAFILE, input, MAX_FILE_SIZE);
+	printf("F init\n");
 
     cudaSetDevice(2);
     mykernel<<<1, 1>>>(input, output);
