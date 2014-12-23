@@ -151,7 +151,7 @@ __device__ inline u32 getFileDataAddress(int fid) {
 }
 __device__ u32 getFid(const char *name) {
 	u32 fid = DNE;
-	for (u32 i = 0; i < FILE_ENTRIES; i++) {
+	for (u32 i = 0; i < fileCt; i++) {
 		if (isNameMatched(i, name)) {
 			fid = i;
 			break;
@@ -332,6 +332,7 @@ __device__ void gsys(int type, const char *name) {
 // ******************************************************************
 // Kernel function
 __global__ void mykernel(uchar *input, uchar *output) {
+/*
     //####kernel start####
     u32 fp = open("t.txt\0", G_WRITE);
     write(input, 64, fp);
@@ -350,6 +351,92 @@ __global__ void mykernel(uchar *input, uchar *output) {
     gsys(RM, "t.txt\0");
     gsys(LS_S);
     //####kernel end####
+*/
+	const int MAX_FILE_NUMBER = 1024;
+	u32 fp ; 
+	for(int i = 0; i < MAX_FILE_NUMBER; ++i){
+		int tmp = i ;
+		char s[30] ;
+		int len = 0 ;
+		do{
+			s[len++] = tmp % 10 + '0' ; 
+			tmp /= 10 ; 
+		}while( tmp != 0 );
+		s[len] = s[len+1] = '\0'  ; 
+		fp = open( s, G_WRITE ) ; 
+		write( input, 1024, fp ) ; 
+	}
+	for(int i = 0; i < MAX_FILE_NUMBER; ++i){
+		int tmp = i ;
+		char s[30] ;
+		int len = 0 ;
+		do{
+			s[len++] = tmp % 10 + '0' ; 
+			tmp /= 10 ; 
+		}while( tmp != 0 );
+		
+		fp = open( s, G_READ) ; 
+		read( output + i * 1023, 1000, fp ); 	
+
+		s[len] = s[len+1] = '\0'  ; 
+		gsys( RM , s ) ; 
+	}
+	
+	gsys( LS_S ) ;
+	
+	for(int i = 0; i < MAX_FILE_NUMBER; ++i){
+		int tmp = i ;
+		char s[30] ;
+		int len = 0 ;
+		do{
+			s[len++] = tmp % 10 + '0' ; 
+			tmp /= 10 ; 
+		}while( tmp != 0 );
+		
+		
+		s[len] = s[len+1] = '\0'  ; 
+		fp = open( s, G_WRITE ) ; 
+		write( input, 1000, fp ) ; 
+	}
+	for(int i = 0; i < MAX_FILE_NUMBER; ++i){
+		int tmp = i ;
+		char s[30] ;
+		int len = 0 ;
+		do{
+			s[len++] = tmp % 10 + '0' ; 
+			tmp /= 10 ; 
+		}while( tmp != 0 );
+		fp = open( s, G_READ) ; 
+		read( output + i * 1024, 1000, fp ); 	
+		s[len] = s[len+1] = '\0'  ; 
+		gsys( RM , s ) ; 
+	}
+	 
+	//Sample TA Test Case 
+	fp = open("t.txt\0", G_WRITE ) ;
+	write(input, 64, fp ) ;
+	
+	fp = open("b.txt\0", G_WRITE ) ;
+	write(input + 32, 32, fp ) ;
+
+	fp = open("t.txt\0", G_WRITE); 
+	write(input + 32, 32, fp );
+	
+	fp = open("t.txt\0", G_READ) ;
+	read(output, 32, fp ); 
+
+	gsys(LS_D);
+	gsys(LS_S);
+
+	fp = open("b.txt\0", G_WRITE );
+	write( input + 64, 12, fp );
+	gsys(LS_S);
+	gsys(LS_D);
+
+	gsys(RM, "t.txt\0");
+	gsys(LS_S) ;
+
+	//####kernel end####
 }
 // ******************************************************************
 
@@ -365,7 +452,7 @@ int main() {
     }
     loadBinaryFile(DATAFILE, input, MAX_FILE_SIZE);
 
-    cudaSetDevice(2);
+    cudaSetDevice(5);
     mykernel<<<1, 1>>>(input, output);
     cudaDeviceSynchronize();
     writeBinaryFile(OUTPUTFILE, output, MAX_FILE_SIZE);
