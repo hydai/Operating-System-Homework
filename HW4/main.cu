@@ -167,23 +167,93 @@ __device__ void sortD() {
 		volume[LS_D_OFFSET+i*2] 	= (i & 0x0000FF00) >> 8;
 		volume[LS_D_OFFSET+i*2+1] 	= i & 0x000000FF;
 	}
+	for (int i = 0; i < fileCt; i++) {
+		u32 swap = i;
+		u32 currentFid = (((u32)(volume[LS_D_OFFSET+i*2])) << 8)
+							| ((u32)(volume[LS_D_OFFSET+i*2+1]));
+		u32 max = ((u32)volume[META_OFFSET+currentFid*META_SIZE+MODIFYT_OFFSET] << 24)
+				| ((u32)volume[META_OFFSET+currentFid*META_SIZE+MODIFYT_OFFSET+1] << 16)
+				| ((u32)volume[META_OFFSET+currentFid*META_SIZE+MODIFYT_OFFSET+2] << 8)
+				| ((u32)volume[META_OFFSET+currentFid*META_SIZE+MODIFYT_OFFSET+3]);
+		for (int j = i+1; j < fileCt; j++) {
+			u32 tmpFid = (((u32)(volume[LS_D_OFFSET+j*2])) << 8)
+						| ((u32)(volume[LS_D_OFFSET+j*2+1]));
+			u32 tmp = ((u32)volume[META_OFFSET+tmpFid*META_SIZE+MODIFYT_OFFSET] << 24)
+					| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+MODIFYT_OFFSET+1] << 16)
+					| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+MODIFYT_OFFSET+2] << 8)
+					| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+MODIFYT_OFFSET+3]);
+			if (tmp > max) {
+				currentFid = tmpFid;
+				max = tmp;
+				swap = j;
+			}
+		}
+		volume[LS_D_OFFSET+swap*2]    = volume[LS_D_OFFSET+i*2];
+		volume[LS_D_OFFSET+swap*2+1]  = volume[LS_D_OFFSET+i*2+1];
+		volume[LS_D_OFFSET+i*2] 	  = (currentFid & 0x0000FF00) >> 8;
+		volume[LS_D_OFFSET+i*2+1] 	  = currentFid & 0x000000FF;
+	}
 }
 __device__ void printD() {
+	printf("===sort by modified time===\n");
 	for (int i = 0; i < fileCt; i++) {
 		int fid = ((int)(volume[LS_D_OFFSET+i*2]) << 8) | ((int)(volume[LS_D_OFFSET+i*2+1]));
-		printf("%s\n", volume[META_OFFSET+fid*META_SIZE]);
+		for (int j = 0; volume[META_OFFSET+fid*META_SIZE+j] != '\0'; j++)
+			printf("%c", volume[META_OFFSET+fid*META_SIZE+j]);
+		printf("\n");
 	}
 }
 __device__ void sortS() {
 	for (int i = 0; i < fileCt; i++) {
-		volume[LS_S_OFFSET+i*2] 	= i & 0xFFFF0000;
-		volume[LS_S_OFFSET+i*2+1] 	= i & 0x0000FFFF;
+		volume[LS_S_OFFSET+i*2] 	= (i & 0x0000FF00) >> 8;
+		volume[LS_S_OFFSET+i*2+1] 	= i & 0x000000FF;
+	}
+	for (int i = 0; i < fileCt; i++) {
+		u32 swap = i;
+		u32 currentFid = (((u32)(volume[LS_S_OFFSET+i*2])) << 8)
+							| ((u32)(volume[LS_S_OFFSET+i*2+1]));
+		u32 max = ((u32)volume[META_OFFSET+currentFid*META_SIZE+SIZE_OFFSET] << 8)
+				| ((u32)volume[META_OFFSET+currentFid*META_SIZE+SIZE_OFFSET+1]);
+		for (int j = i+1; j < fileCt; j++) {
+			u32 tmpFid = (((u32)(volume[LS_S_OFFSET+j*2])) << 8)
+						| ((u32)(volume[LS_S_OFFSET+j*2+1]));
+			u32 tmp = ((u32)volume[META_OFFSET+tmpFid*META_SIZE+SIZE_OFFSET] << 8)
+					| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+SIZE_OFFSET+1]);
+			if (tmp > max) {
+				currentFid = tmpFid;
+				max = tmp;
+				swap = j;
+			} else if (tmp == max) {
+				u32 tct = ((u32)volume[META_OFFSET+tmpFid*META_SIZE+CREATET_OFFSET] << 24)
+						| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+CREATET_OFFSET+1] << 16)
+						| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+CREATET_OFFSET+2] << 8)
+						| ((u32)volume[META_OFFSET+tmpFid*META_SIZE+CREATET_OFFSET+3]);
+				u32 cct = ((u32)volume[META_OFFSET+currentFid*META_SIZE+CREATET_OFFSET] << 24)
+						| ((u32)volume[META_OFFSET+currentFid*META_SIZE+CREATET_OFFSET+1] << 16)
+						| ((u32)volume[META_OFFSET+currentFid*META_SIZE+CREATET_OFFSET+2] << 8)
+						| ((u32)volume[META_OFFSET+currentFid*META_SIZE+CREATET_OFFSET+3]);
+				if (cct > tct) {
+					currentFid = tmpFid;
+					max = tmp;
+					swap = j;
+				}
+			}
+		}
+		volume[LS_S_OFFSET+swap*2]    = volume[LS_S_OFFSET+i*2];
+		volume[LS_S_OFFSET+swap*2+1]  = volume[LS_S_OFFSET+i*2+1];
+		volume[LS_S_OFFSET+i*2] 	  = (currentFid & 0x0000FF00) >> 8;
+		volume[LS_S_OFFSET+i*2+1] 	  = currentFid & 0x000000FF;
 	}
 }
 __device__ void printS() {
+	printf("===sort by file size===\n");
 	for (int i = 0; i < fileCt; i++) {
 		int fid = ((int)(volume[LS_S_OFFSET+i*2]) << 8) | ((int)(volume[LS_S_OFFSET+i*2+1]));
-		printf("%s\n", volume[META_OFFSET+fid*META_SIZE]);
+		u32 tmp = (((u32)(volume[META_OFFSET+fid*META_SIZE+SIZE_OFFSET])) << 8)
+				| ((u32)volume[META_OFFSET+fid*META_SIZE+SIZE_OFFSET+1]);
+		for (int j = 0; volume[META_OFFSET+fid*META_SIZE+j] != '\0'; j++)
+			printf("%c", volume[META_OFFSET+fid*META_SIZE+j]);
+		printf(" %d\n", tmp);
 	}
 }
 __device__ void deleteFileByName(const char *name) {
@@ -209,7 +279,6 @@ __device__ void deleteFileByName(const char *name) {
 // ******************************************************************
 // FS Operation
 __device__ u32 open(const char *name, int type) {
-    printf("Open %s %d\n", name, type);
 	u32 fid = getFid(name);
     return fid;
 }
@@ -221,7 +290,6 @@ __device__ void write(uchar *src, int len, u32 fid) {
 	for (u32 i = 0; i < len; i++) {
 		updateData(entry+i,src[i]);
 	}
-    printf("Write %s %d %d\n", src, len, fid);
 }
 
 __device__ void read(uchar *dst, int len, u32 fid) {
@@ -229,7 +297,6 @@ __device__ void read(uchar *dst, int len, u32 fid) {
 	for (u32 i = 0; i < len; i++) {
 		dst[i] = getData(entry+i);
 	}
-    printf("Read %s %d %d\n", dst, len, fid);
 }
 
 __device__ void gsys(int type) {
@@ -247,7 +314,6 @@ __device__ void gsys(int type) {
 			printS();
 			break;
 	}
-    printf("Gsys %d\n", type);
 }
 
 __device__ void gsys(int type, const char *name) {
@@ -259,7 +325,6 @@ __device__ void gsys(int type, const char *name) {
 			deleteFileByName(name);
 			break;
 	}
-    printf("Gsys %d %s\n", type, name);
 }
 
 // ******************************************************************
@@ -274,6 +339,7 @@ __global__ void mykernel(uchar *input, uchar *output) {
     write(input+32, 32, fp);
     fp = open("t.txt\0", G_WRITE);
     write(input+32, 32, fp);
+    fp = open("t.txt\0", G_READ);
     read(output, 32, fp);
     gsys(LS_D);
     gsys(LS_S);
@@ -289,7 +355,6 @@ __global__ void mykernel(uchar *input, uchar *output) {
 
 int main() {
     cudaMallocManaged(&volume, STORAGE_SIZE);
-	printf("B init\n");
     init_volume();
 
     uchar *input, *output;
@@ -299,7 +364,6 @@ int main() {
         output[i] = 0;
     }
     loadBinaryFile(DATAFILE, input, MAX_FILE_SIZE);
-	printf("F init\n");
 
     cudaSetDevice(2);
     mykernel<<<1, 1>>>(input, output);
