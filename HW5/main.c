@@ -3,6 +3,8 @@
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/stat.h>
+#include <linux/fs.h>
+#include <asm/uaccess.h>        /* for put_user */
 #include "ioc_hw5.h"
 
 MODULE_LICENSE("GPL");
