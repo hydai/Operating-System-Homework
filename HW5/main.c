@@ -120,12 +120,12 @@ unsigned int myinl(unsigned short int port) {
     return *(unsigned int*)(dma_buf+port);
 }
 
-static int drv_open(struct inode*, struct file*) {
+static int drv_open(struct inode* ii, struct file* ff) {
     try_module_get(THIS_MODULE);
     printk("%s:%s(): device open\n", PREFIX_TITLE, __func__);
     return 0;
 }
-static int drv_release(struct inode*, struct file*) {
+static int drv_release(struct inode* ii, struct file* ff) {
     module_put(THIS_MODULE);
     printk("%s:%s(): device close\n", PREFIX_TITLE, __func__);
     return 0;
