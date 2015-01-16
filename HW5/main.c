@@ -279,7 +279,7 @@ static void __exit exit_modules(void) {
 
     // Delete char device
     unregister_chrdev_region(MKDEV(dev_major,dev_minor), DEV_COUNT);
-    cdev_del(dev_cdevp);
+    cdev_del(dev_cdev);
 
     // Free work routine
     kfree(work_routine);
