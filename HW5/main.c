@@ -239,7 +239,7 @@ static void drv_arithmetic_routine(struct work_struct* ws) {
     } else {
         ans = 0;
     }
-    printk("%s:%s():%d %c %d = %d\n", PREFIX_TITLE, __func__, opData.a, opData.b, opData.c, ans);
+    printk("%s:%s():%d %c %d = %d\n", PREFIX_TITLE, __func__, opData.b, opData.a, opData.c, ans);
     myoutl(ans, DMAANSADDR);
     if(myinl(DMABLOCKADDR == FALSE)) {
         myoutl(TRUE, DMAREADABLEADDR);
