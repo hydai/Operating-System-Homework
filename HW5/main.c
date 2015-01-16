@@ -81,7 +81,7 @@ struct DataIn {
 int prime(int base, short nth);
 
 // Arithmetic funciton
-static void drv_arithmetic_routine(work_struct* ws);
+static void drv_arithmetic_routine(struct work_struct* ws);
 
 int prime(int base, short nth)
 {
@@ -142,7 +142,7 @@ static int drv_read(struct file *filp, char __user *buffer, size_t, loff_t*) {
     myoutl(FALSE, DMAREADABLEADDR);
     return 0;
 }
-static int drv_write(struct file *filp, const char __user *buffer, size_t, loff_t*) {
+static int drv_write(struct file *filp, const char __user *buffer, size_t ss, loff_t* lo) {
     // Get IO mode
     int IOMode = myinl(DMABLOCKADDR);
     printk("%s:%s(): queue work\n", PREFIX_TITLE, __func__);
