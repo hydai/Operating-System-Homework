@@ -4,7 +4,10 @@
 #include <linux/init.h>
 #include <linux/stat.h>
 #include <linux/fs.h>
-#include <asm/uaccess.h>        /* for put_user */
+#include <linux/workqueue.h>
+#include <linux/sched.h>
+#include <linux/slab.h>
+#include <asm/uaccess.h>
 #include "ioc_hw5.h"
 
 MODULE_LICENSE("GPL");
