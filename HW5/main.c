@@ -20,7 +20,7 @@ MODULE_AUTHOR("Hung-Ying Tai");
 #define FALSE 0
 #define TRUE 1
 #define INITIANL_VALUE 0
-#define TIMEPERIOD 1024
+#define TIMEPERIOD 1000
 
 // DEVICE
 #define DEV_NAME "mydev"        // name for alloc_chrdev_region
@@ -109,22 +109,22 @@ int prime(int base, short nth)
 }
 
 void myoutb(unsigned char data,unsigned short int port) {
-    *(unsigned char*)(dma_buf+port) = data;
+    *(volatile unsigned char*)(dma_buf+port) = data;
 }
 void myoutw(unsigned short data,unsigned short int port) {
-    *(unsigned short*)(dma_buf+port) = data;
+    *(volatile unsigned short*)(dma_buf+port) = data;
 }
 void myoutl(unsigned int data,unsigned short int port) {
-    *(unsigned int*)(dma_buf+port) = data;
+    *(volatile unsigned int*)(dma_buf+port) = data;
 }
 unsigned char myinb(unsigned short int port) {
-    return *(unsigned char*)(dma_buf+port);
+    return *(volatile unsigned char*)(dma_buf+port);
 }
 unsigned short myinw(unsigned short int port) {
-    return *(unsigned short*)(dma_buf+port);
+    return *(volatile unsigned short*)(dma_buf+port);
 }
 unsigned int myinl(unsigned short int port) {
-    return *(unsigned int*)(dma_buf+port);
+    return *(volatile unsigned int*)(dma_buf+port);
 }
 
 static int drv_open(struct inode* ii, struct file* ff) {
@@ -139,6 +139,7 @@ static int drv_release(struct inode* ii, struct file* ff) {
 }
 static int drv_read(struct file *filp, char __user *buffer, size_t ss, loff_t* lo) {
     printk("%s:%s(): ans = %d\n", PREFIX_TITLE, __func__, myinl(DMAANSADDR));
+    *(int *)buffer = myinl(DMAANSADDR);
     // Clean answer & set readable to false
     myoutl(INITIANL_VALUE, DMAANSADDR);
     myoutl(FALSE, DMAREADABLEADDR);
@@ -157,11 +158,14 @@ static int drv_write(struct file *filp, const char __user *buffer, size_t ss, lo
     myoutw(dataIn->c, DMAOPERANDCADDR);
 
     // Decide io mode
-    schedule_work(work_routine);
     if(IOMode) {
         // Blocking IO
         printk("%s:%s(): block\n", PREFIX_TITLE, __func__);
+	schedule_work(work_routine);
         flush_scheduled_work();
+    } else {
+        // Non-locking IO
+	schedule_work(work_routine);
     }
     return 0;
 }
@@ -252,8 +256,9 @@ static int __init init_modules(void) {
         printk(KERN_ALERT"Register chrdev failed!\n");
         return -1;
     } else {
-        printk("%s:%s(): register chrdev(%i,%i)\n", PREFIX_TITLE, __func__, dev_major, dev_minor);
+        printk("%s:%s(): register chrdev(%i,%i)\n", PREFIX_TITLE, __func__, MAJOR(dev), MINOR(dev));
     }
+
     dev_major = MAJOR(dev);
     dev_minor = MINOR(dev);
 
