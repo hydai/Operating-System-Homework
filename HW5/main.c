@@ -7,6 +7,8 @@
 #include <linux/workqueue.h>
 #include <linux/sched.h>
 #include <linux/slab.h>
+#include <linux/cdev.h>
+#include <linux/delay.h>
 #include <asm/uaccess.h>
 #include "ioc_hw5.h"
 
@@ -135,7 +137,7 @@ static int drv_release(struct inode* ii, struct file* ff) {
     printk("%s:%s(): device close\n", PREFIX_TITLE, __func__);
     return 0;
 }
-static int drv_read(struct file *filp, char __user *buffer, size_t, loff_t*) {
+static int drv_read(struct file *filp, char __user *buffer, size_t ss, loff_t* lo) {
     printk("%s:%s(): ans = %d\n", PREFIX_TITLE, __func__, myinl(DMAANSADDR));
     // Clean answer & set readable to false
     myoutl(INITIANL_VALUE, DMAANSADDR);
@@ -146,7 +148,7 @@ static int drv_write(struct file *filp, const char __user *buffer, size_t ss, lo
     // Get IO mode
     int IOMode = myinl(DMABLOCKADDR);
     printk("%s:%s(): queue work\n", PREFIX_TITLE, __func__);
-    INIT_WORK(work_routine, arithmetic_routine);
+    INIT_WORK(work_routine, drv_arithmetic_routine);
 
     // Get data
     dataIn = (struct DataIn *)buffer;
@@ -214,12 +216,12 @@ static int drv_ioctl(struct file *filp, unsigned int cmd, unsigned long arg) {
     return 0;
 }
 
-static void drv_arithmetic_routine(work_struct* ws) {
-    DataIn opData;
+static void drv_arithmetic_routine(struct work_struct* ws) {
+    struct DataIn opData;
+    int ans = 0;
     opData.a = myinb(DMAOPCODEADDR);
     opData.b = myinl(DMAOPERANDBADDR);
     opData.c = myinw(DMAOPERANDCADDR);
-    int ans = 0;
     if (opData.a == '+') {
         ans = opData.b + opData.c;
     } else if (opData.a == '-') {
