@@ -6,6 +6,7 @@
 #include <linux/fs.h>
 #include <linux/workqueue.h>
 #include <linux/sched.h>
+#include <linux/interrupt.h>
 #include <linux/slab.h>
 #include <linux/cdev.h>
 #include <linux/delay.h>
@@ -44,6 +45,18 @@ static struct cdev *dev_cdev;
 #define DMAOPERANDBADDR 0x21    // data.b operand1
 #define DMAOPERANDCADDR 0x25    // data.c operand2
 void *dma_buf;
+
+// Bonus function
+static int counter = 0;
+static int IRQ_NUM = 1;
+void *irq_dev_id = (void *)&IRQ_NUM; 
+
+static irqreturn_t watchdog_irq(int irq, void* dev_id) {
+	if (irq == IRQ_NUM) {
+		counter++;
+	}
+	return IRQ_NONE;
+}
 
 // Function follow TA specs
 static int drv_read(struct file *filp, char __user *buffer, size_t, loff_t*);
@@ -248,7 +261,15 @@ static void drv_arithmetic_routine(struct work_struct* ws) {
 
 static int __init init_modules(void) {
     dev_t dev;
+	int status = 0;
     printk("%s:%s():...............Start...............\n", PREFIX_TITLE, __func__);
+	status = request_irq(IRQ_NUM, watchdog_irq, IRQF_SHARED, "watchdog", irq_dev_id);
+	if (status < 0) {
+		printk(KERN_ALERT"%s:GG\n", PREFIX_TITLE);
+		return -1;
+	} else {
+        printk("%s:%s(): requset_irq %i return %i\n", PREFIX_TITLE, __func__, IRQ_NUM, status);
+	}
     dev_cdev = cdev_alloc();
 
     // Register chrdev
@@ -285,6 +306,10 @@ static int __init init_modules(void) {
 }
 
 static void __exit exit_modules(void) {
+    // Interrupt counter
+	free_irq(IRQ_NUM, irq_dev_id);
+    printk("%s:%s(): interrupt count=%i\n", PREFIX_TITLE, __func__, counter);
+
     // Free DMA buffer
     kfree(dma_buf);
     printk("%s:%s(): free dma buffer\n", PREFIX_TITLE, __func__);
